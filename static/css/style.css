@@ -2,25 +2,35 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "poppins", sans-serif;
+    font-family: "Inter", sans-serif;
 }
 body{
-    background-color: #c9d6ff;
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    min-height: 100vh;
+    background-color: #1c92d2;  
+    background: -webkit-linear-gradient(to bottom, #f2fcfe, #1c92d2);  
+    background: linear-gradient(to bottom, #f2fcfe, #1c92d2); 
+
 }
 .container{
     background: #fff;
     width: 450px;
     padding: 1.8rem;
     margin: 100px auto;
-    border-radius: 10px;
-    box-shadow: 0 20px 35px rgba(0,0,1,0.9);
+    border-radius: 40px 10px 40px 10px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px); 
 }
+
+.container:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+}
+
 form{
     margin: 0 2rem;
 }
 .form-title{
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     text-align: center;
     padding: 1.3rem;
@@ -33,7 +43,7 @@ input{
     border: none;
     border-bottom: 1px solid #757575;
     padding-left: 1.5rem;
-    font-size: 15px;
+    font-size: 1rem;
 }
 .input-group{
     padding: 1% 0;
@@ -111,21 +121,20 @@ select:valid ~ label{
     outline: none;
     border: none;
     width: 100%;
-    background: rgb(125,125,235);
+    background: linear-gradient(135deg, #6c63ff, #5e72e4);
+    box-shadow: 0 4px 12px rgba(92,114,228,0.4);
     color: white;
     cursor: pointer;
     transition: 0.9s;
 }
 .btn:hover{
-    background: #07001f;
+    background: (135deg, #5e72e4, #6c63ff);
+    transform: scale(1.06);
 }
-.or{
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
-    text-align: center;
-}
+
 .icons{
     text-align: center;
+    margin-top: 1.5rem;
 }
 
 .icons i{
@@ -133,8 +142,8 @@ select:valid ~ label{
     justify-content: center;
     align-items: center;
 
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
 
     color: rgb(125,125,235);
     font-size: 1.5rem;
@@ -147,9 +156,11 @@ select:valid ~ label{
 
 
 .icons i:hover{
-    background: #07001f;
+    background: #7c8dec;
+    color: white;
     font-size: 1.6rem;
     border: 2px solid rgb(125,125,235);
+    transform: scale(1.1) rotate(10deg);
 }
 .links{
     display: flex;
