@@ -6,9 +6,7 @@
 }
 body{
     min-height: 100vh;
-    background-color: #1c92d2;  
-    background: -webkit-linear-gradient(to bottom, #f2fcfe, #1c92d2);  
-    background: linear-gradient(to bottom, #f2fcfe, #1c92d2); 
+    background:linear-gradient(135deg,#026735a9 0%,#aef5d5 40%,#013f22 100%);
 
 }
 .container{
