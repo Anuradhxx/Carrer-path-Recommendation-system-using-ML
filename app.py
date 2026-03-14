@@ -15,20 +15,24 @@ conn=mysql.connector.connect(
 cursor = conn.cursor()
 
 @app.route('/')
-def login():
+def home():
+    if 'Id' in session:
+        return redirect('/dashboard')
     return render_template('index.html')
 
 @app.route('/register')
 def register():
-    return render_template('index.html')
-
-
-@app.route('/home')
-def home():
     if 'Id' in session:
-        return render_template('home.html')
+        return redirect('/dashboard')
+    return render_template('register.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    if 'Id' in session:
+        return render_template('dashboard.html')
     else:
-        return redirect('/')
+        return redirect('/register')
 
 @app.route('/login_validation', methods=['POST'])
 def login_validation():
@@ -36,14 +40,17 @@ def login_validation():
     password = request.form.get('password')
 
 
-    cursor.execute(""" SELECT * FROM `users`  WHERE `email` LIKE '{}' AND `password` LIKE '{}'"""
-                   .format(email, password))
+    cursor.execute(
+    "SELECT * FROM users  WHERE email=%s AND password=%s",
+    (email, password)
+    )
+    
     users = cursor.fetchall()
     if len(users)>0:
         session['Id'] = users[0][0]
-        return redirect('/home')
+        return redirect('/dashboard')
     else:
-        return redirect('/')
+        return redirect('/register')
     
 
 
@@ -63,13 +70,13 @@ def add_user():
     cursor.execute("""SELECT * FROM `users` WHERE `email` LIKE '{}'""".format(email))
     myuser=cursor.fetchall()
     session['Id'] = myuser[0][0]
-    return redirect('/home')
+    return redirect('/dashboard')
 
 
 
 @app.route('/logout')
 def logout():
-    session.pop('Id')
+    session.pop('Id', None)
     return redirect('/')
 
 
