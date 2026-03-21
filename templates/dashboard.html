@@ -2,27 +2,180 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="../static/css/dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard</title>
+
+  <link rel="stylesheet" href="../static/css/dashboard.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
-    <div id="home">
-        <nav>
-            <a href="#">skill</a>
-            <a href="#">company</a>
-            <a href="#">Recommendation</a>
-            <a href="#">internship</a>
-            <a href="#">setting</a>
-        </nav>
-        
-        <a href="/logout"> logout</a>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+
+      <div class="logo">
+        <div class="logo-circle">
+          <i data-lucide="target"></i>
+        </div>
+        <span class="logo-text">CareerPath</span>
+      </div>
+
+      <ul class="nav-menu">
+        <li> <a href="#"><i data-lucide="house"></i> Dashboard </a></li>
+        <li> <a href="#"><i data-lucide="book-open-check"></i> Assessment </a></li>
+        <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
+        <li> <a href="#"><i data-lucide="trending-up"></i> Skills </a></li>
+        <li> <a href="#"><i data-lucide="briefcase-business"></i> Market </a></li>
+      </ul>
+
+      <div class="nav-right">
+        <div class="divider"></div>
+        <a href="#"><i data-lucide="moon"></i></a>
+        <a href="#"><i data-lucide="user-round"></i></a>
+        <a href="/logout"><i data-lucide="log-out"></i></a>
+      </div>
 
     </div>
-    <h1>Welcome to the Home page</h1>
+  </nav>
+
+
+  <!-- MAIN -->
+  <div class="container">
+    <div class="welcome">
+      <h1 class="welcome-title">
+        Welcome back, <span class="user-name">{{ user.fName }}</span>!
+      </h1>
+      <p class="welcome-sub">
+        Continue your journey to finding the perfect career path
+      </p>
+    </div>
+
+
+
+
+    <!-- STATS -->
+    <div class="stats-wrapper">
+      <div class="stats">
+
+        <div class="card">
+          <div class="icon green">
+            <i data-lucide="clipboard-pen"></i>
+          </div>
+          <div>
+            <h2>1</h2>
+            <p>Assessments</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="icon orange">
+            <i data-lucide="thumbs-up"></i>
+          </div>
+          <div>
+            <h2>0</h2>
+            <p>Recommendations</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="icon green">
+            <i data-lucide="book-marked"></i>
+          </div>
+          <div>
+            <h2>0</h2>
+            <p>Skills Tracked</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ACTION CARDS -->
+    <section class="actions">
+
+      <div class="action-card">
+        <div class="icon green big">
+          <i data-lucide="notebook-pen"></i>
+        </div>
+
+        <h3>Take Career Assessment</h3>
+        <p>
+          Answer a few questions about your skills, interests, and goals to get personalized career recommendations.
+        </p>
+
+        <a href="#" class="btn primary">
+          Start Assessment →
+        </a>
+      </div>
+
+      <div class="action-card">
+        <div class="icon orange big">
+          <i data-lucide="brain-circuit"></i>
+        </div>
+
+        <h3>View Recommendations</h3>
+        <p>
+          Explore AI-powered career recommendations tailored to your unique profile and aspirations.
+        </p>
+
+        <a href="#" class="btn outline">
+          View Careers →
+        </a>
+      </div>
+
+      <!-- SKILL GAP -->
+      <div class="action-card">
+        <div class="icon orange big">
+          <i data-lucide="chart-no-axes-combined"></i>
+        </div>
+
+        <h3>Analyze Skill Gaps</h3>
+        <p>
+          Understand what skills you need to develop to reach your dream career.
+        </p>
+
+        <a href="#" class="btn outline">
+          Analyze Skills →
+        </a>
+      </div>
+
+      <!-- JOB MARKET -->
+      <div class="action-card">
+        <div class="icon green big">
+          <i data-lucide="chart-candlestick"></i>
+        </div>
+
+        <h3>Job Market Insights</h3>
+        <p>
+          Stay updated with trending careers, in-demand skills, and salary insights.
+        </p>
+
+        <a href="#" class="btn outline">
+          View Insights →
+        </a>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+
+  <script src="../static/js/dashboard.js"></script>
 
 </body>
 
