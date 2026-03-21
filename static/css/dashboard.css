@@ -1,0 +1,376 @@
+body{
+margin:0;
+font-family: "Satoshi", sans-serif;
+background:linear-gradient(135deg,#edf5f1,#f8faf9);
+padding-bottom: 60px;
+}
+
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.nav-container{
+  width:75%;
+  max-width:1000px;
+
+  background:rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+
+  padding:6px 16px;  
+  border-radius:50px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.08),
+    0 4px 6px rgba(0,0,0,0.04);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height: 1;
+  margin-left: 10px;
+}
+
+.logo-circle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+
+  background:linear-gradient(135deg,#1c6b42,#2b8a5e);
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: -1px;
+}
+
+.nav-menu{
+  display:flex;
+  align-items:center;
+  gap:24px;
+}
+
+.nav-menu li{
+  list-style:none;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:#2b2b2b;
+  font-size:14px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  transition:all 0.25s ease;
+}
+
+
+.nav-menu a:hover{
+  background:rgba(28,107,66,0.12);
+  color:#1c6b42;
+  transform: translateX(-1px);
+}
+
+
+.logo-text{
+  font-family: "Clash Display", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+
+  background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.nav-right a{
+  width:30px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  color:#333;
+
+  transition:all 0.25s ease;
+}
+
+
+.nav-right a:hover{
+  background:rgba(28,107,66,0.1);
+  color:#1c6b42;
+}
+
+
+.divider{
+  width:1px;
+  height:22px;
+  background:rgba(0,0,0,0.15);
+}
+
+
+.nav-menu svg{
+  width:18px;
+  height:18px;
+}
+
+.nav-right svg{
+  width:18px;
+  height:18px;
+}
+
+.logo svg{
+  width:16px;
+  height:16px;
+}
+
+
+
+/* DASHBOARD */
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.welcome{
+  padding: 40px 0 0;
+}
+
+.welcome-title{
+font-size:48px;
+font-family: "Clash Display";
+font-weight: 700;
+letter-spacing: -0.5px;
+color: #1a1a1a;
+margin-bottom: 8px;
+}
+
+.user-name{
+  background: linear-gradient(135deg, #1c6b42, #2b8a5e);
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  font-weight: 800;
+}
+
+.welcome-sub{
+color:#666666;
+font-size: 20px;
+}
+
+
+
+/*STATS */
+.stats-wrapper {
+  margin-top: 50px;
+}
+
+.stats {
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 0 20px;
+}
+
+/* STAT CARD */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+
+  padding: 26px;
+  border-radius: 24px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  border: 1px solid rgba(0,0,0,0.05);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.05),
+    0 2px 6px rgba(0,0,0,0.03);
+
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+}
+
+/* ICON */
+.icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon.green {
+  background: rgba(28,107,66,0.12);
+  color: #1c6b42;
+}
+
+.icon.orange {
+  background: rgba(230,126,34,0.12);
+  color: #e67e22;
+}
+
+/* TEXT */
+.card h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.card p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ACTION CARDS */
+.actions {
+  width: 100%;
+  max-width: 1100px;
+  margin: 50px auto 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+
+  padding: 0 20px;
+}
+
+/* ACTION CARD */
+.action-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+
+  padding: 36px;
+  border-radius: 28px;
+
+  border: 1px solid rgba(0,0,0,0.05);
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.06),
+    0 4px 8px rgba(0,0,0,0.03);
+
+  transition: 0.3s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-6px);
+}
+
+/* BIG ICON */
+.icon.big {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  margin-bottom: 18px;
+}
+
+/* TITLE */
+.action-card h3 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "Clash Display";
+}
+
+/* DESC */
+.action-card p {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* BUTTON */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 20px;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+
+  transition: 0.25s;
+}
+
+/* PRIMARY */
+.btn.primary {
+  background: #1c6b42;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #155d37;
+}
+
+/* OUTLINE */
+.btn.outline {
+  border: 1px solid #1c6b42;
+  color: #1c6b42;
+}
+
+.btn.outline:hover {
+  background: #1c6b42;
+  color: white;
+}
+
+/* ICON SIZE FIX */
+.card svg,
+.action-card svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
