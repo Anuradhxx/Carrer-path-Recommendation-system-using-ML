@@ -30,9 +30,13 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     if 'Id' in session:
-        return render_template('dashboard.html')
+        cursor.execute("SELECT fName FROM users WHERE Id=%s", (session['Id'],))
+        user = cursor.fetchone()
+        return render_template('dashboard.html', user={'fName': user[0]})
     else:
         return redirect('/register')
+
+
 
 @app.route('/login_validation', methods=['POST'])
 def login_validation():
