@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <link rel="stylesheet" href="../static/css/dashboard.css">
+    <link rel="stylesheet" href="../static/css/profile.css">
+
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <div class="logo">
+                <div class="logo-circle">
+                    <i data-lucide="target"></i>
+                </div>
+                <span class="logo-text">CareerPath</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li> <a href="#"><i data-lucide="house"></i> Dashboard </a></li>
+                <li> <a href="#"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
+                <li> <a href="#"><i data-lucide="trending-up"></i> Skills </a></li>
+                <li> <a href="#"><i data-lucide="briefcase-business"></i> Market </a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="divider"></div>
+                <a href="#"><i data-lucide="moon"></i></a>
+                <a href="/profile"><i data-lucide="user-round"></i></a>
+                <a href="/logout"><i data-lucide="log-out"></i></a>
+            </div>
+
+        </div>
+    </nav>
+
+
+
+    <div class="container profile-container">
+
+        <h1 class="profile-title">Your Profile</h1>
+        <p class="profile-sub">Track your learning progress and manage your account</p>
+
+        <div class="profile-grid">
+
+            <!-- LEFT PROFILE CARD -->
+            <div class="profile-card">
+
+                <div class="profile-avatar">
+                    <i data-lucide="user"></i>
+                </div>
+
+                <h2 id="userName">{{ user.fName }} {{ user.lName }}</h2>
+
+                <div class="profile-info">
+                    <div class="info-row">
+                        <i data-lucide="mail"></i>
+                        <span id="userEmail">{{ user.email }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <i data-lucide="calendar"></i>
+                        <span id="memberSince">{{ user.created_at.strftime('%b %Y') }}</span>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SECTION -->
+            <div class="profile-right">
+
+                <!-- ADD PROGRESS -->
+                <div class="card-box">
+                    <h3>Track New Skill Progress</h3>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Skill Name</label>
+                            <input type="text" id="skillInput" placeholder="e.g., Python">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Progress (%)</label>
+                            <input type="number" id="progressInput" placeholder="0-100">
+                        </div>
+                    </div>
+
+                    <button id="addProgressBtn" class="btn primary">
+                        Update Progress
+                    </button>
+                </div>
+
+                <!-- PROGRESS LIST -->
+                <div class="card-box">
+                    <h3>Your Learning Progress</h3>
+
+                    <div id="progressList">
+                        <p class="empty">No progress tracked yet.Start tracking your skills!</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <script>lucide.createIcons();</script>
+    <script src="../static/js/profile.js"></script>
+
+</body>
+
+</html>
