@@ -29,7 +29,7 @@
             </div>
 
             <ul class="nav-menu">
-                <li> <a href="#"><i data-lucide="house"></i> Dashboard </a></li>
+                <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
                 <li> <a href="#"><i data-lucide="book-open-check"></i> Assessment </a></li>
                 <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
                 <li> <a href="#"><i data-lucide="trending-up"></i> Skills </a></li>
@@ -108,7 +108,24 @@
                     <h3>Your Learning Progress</h3>
 
                     <div id="progressList">
+                        {% if progress_data %}
+                        {% for item in progress_data %}
+                        <div class="progress-item">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span>{{ item[0] }}</span>
+                                <span>{{ item[1] }}%</span>
+                            </div>
+                            <span class="last-updated">
+                                Last updated: {{ item[2].strftime('%d %b %Y') }}
+                            </span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--width: {{ item[1] }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
                         <p class="empty">No progress tracked yet.Start tracking your skills!</p>
+                        {% endif %}
                     </div>
                 </div>
 
