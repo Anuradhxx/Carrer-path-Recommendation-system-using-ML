@@ -36,6 +36,25 @@ def dashboard():
     else:
         return redirect('/register')
 
+@app.route('/profile', methods=['GET'])
+def profile():
+    if 'Id' in session:
+        cursor.execute("SELECT fName, lName, email, created_at FROM users WHERE Id=%s", (session['Id'],))
+        user = cursor.fetchone()
+        if user:
+            user_data={
+                'fName': user[0],
+                'lName': user[1],
+                'email': user[2],
+                'created_at': user[3]
+            }
+            return render_template('profile.html', user=user_data)
+        else:
+            return redirect('/dashboard')
+    else:
+        return redirect('/register')
+
+
 
 
 @app.route('/login_validation', methods=['POST'])
@@ -65,9 +84,10 @@ def add_user():
     email = request.form.get('email')
     password = request.form.get('password')
     role = request.form.get('role')
+    created_at = request.form.get('created_at')
 
-    cursor.execute(""" INSERT INTO  `users` (`Id` , `fName`, `lName`, `email`, `password`, `role`) VALUES 
-                  (NULL, '{}', '{}', '{}', '{}', '{}') """. format(fName, lName, email, password,role))
+    cursor.execute(""" INSERT INTO  `users` (`Id` , `fName`, `lName`, `email`, `password`, `role`, `created_at`) VALUES 
+                  (NULL, '{}', '{}', '{}', '{}', '{}') """. format(fName, lName, email, password,role, created_at))
     
     conn.commit()
 
