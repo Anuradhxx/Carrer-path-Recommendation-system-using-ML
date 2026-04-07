@@ -13,17 +13,88 @@ line-height: 1.6;
 color: #222;
 }
 
+.navbar {
+  position: fixed;
+  top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 55%;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.6);
+  /* backdrop-filter: blur(14px); */
+  border-radius: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.logo img {
+  height: 44px;     
+  width: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;   
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+  list-style: none;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.login {
+  text-decoration: none;
+  color: #2c2b2b;
+  font-weight: 600;
+}
+
+
+.signup {
+  text-decoration: none;
+  padding: 6px 14px;
+  background: #364961;
+  color: white;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.signup:hover {
+  background: #282b35;
+}
+
 header{
-padding:30px 20px ;
+padding-top: 120px;
 }
 
 .hero-title{
 font-family: "Clash Display", sans-serif;
-font-weight: 800;
-font-size: 4.5rem;
-line-height: 1;
+font-weight: 700;
+font-size: 3.2rem;
+line-height: 1.1;
 letter-spacing:-0.02em;
-margin-bottom: 2rem;
+margin-bottom: 1.5rem;
 }
 
 
@@ -51,7 +122,7 @@ font-size:72px;
 
 .hero-description{
 font-family: "Satoshi", sans-serif;
-font-size: 1.25rem;
+font-size: 1.1rem;
 color: hsl(0 0% 45.1%);
 max-width:672px;
 margin-left:auto;
