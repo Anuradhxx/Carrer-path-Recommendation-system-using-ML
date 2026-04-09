@@ -216,7 +216,19 @@ def post_job():
     if 'company_id' not in session:
         return redirect('/company')
 
-    return render_template('post_job.html')
+    cid = session['company_id']
+
+    cursor.execute("""
+        SELECT id, title, description, location, salary, job_type 
+        FROM jobs 
+        WHERE company_id=%s
+        ORDER BY id DESC
+    """, (cid,))
+
+    jobs = cursor.fetchall()
+
+    return render_template('post_job.html', jobs=jobs)
+
 
 
 @app.route('/submit_job', methods=['POST'])
@@ -248,70 +260,78 @@ def submit_job():
 
 
 
-# # MANAGE JOBS PAGE
-# @app.route('/manage_jobs')
-# def manage_jobs():
-#     if 'company_id' not in session:
-#         return redirect('/company')
+# MANAGE JOBS PAGE
+@app.route('/manage_jobs')
+def manage_jobs():
+    if 'company_id' not in session:
+        return redirect('/company')
 
-#     cid = session['company_id']
+    cid = session['company_id']
 
-#     # Fetch all jobs for this company
-#     cursor.execute("SELECT id, title, job_type, location, salary, created_at FROM jobs WHERE company_id=%s ORDER BY created_at DESC", (cid,))
-#     jobs = cursor.fetchall()
+    # Fetch all jobs for this company
+    cursor.execute("SELECT id, title, description, job_type, location, salary, created_at FROM jobs WHERE company_id=%s ORDER BY created_at DESC", (cid,))
+    jobs = cursor.fetchall()
 
-#     return render_template('manage_jobs.html', jobs=jobs)
+    return render_template('manage_jobs.html', jobs=jobs)
 
-# # DELETE JOB
-# @app.route('/delete_job/<int:job_id>')
-# def delete_job(job_id):
-#     if 'company_id' not in session:
-#         return redirect('/company')
+# DELETE JOB
+@app.route('/delete_job/<int:job_id>')
+def delete_job(job_id):
+    if 'company_id' not in session:
+        return redirect('/company')
 
-#     cid = session['company_id']
+    cid = session['company_id']
     
-#     # Ensure company owns the job
-#     cursor.execute("DELETE FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
-#     conn.commit()
+    # Ensure company owns the job
+    cursor.execute("DELETE FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
+    conn.commit()
     
-#     return redirect('/manage_jobs')
+    return redirect('/manage_jobs')
 
-# # EDIT JOB PAGE
-# @app.route('/edit_job/<int:job_id>')
-# def edit_job(job_id):
-#     if 'company_id' not in session:
-#         return redirect('/company')
+# EDIT JOB PAGE
+@app.route('/edit_job/<int:job_id>')
+def edit_job(job_id):
+    if 'company_id' not in session:
+        return redirect('/company')
 
-#     cid = session['company_id']
-#     cursor.execute("SELECT id, title, description, location, salary, job_type FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
-#     job = cursor.fetchone()
+    cid = session['company_id']
+    cursor.execute("SELECT id, title, description, location, salary, job_type FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
+    job = cursor.fetchone()
 
-#     if not job:
-#         return "Job not found or unauthorized"
+    if not job:
+        return "Job not found or unauthorized"
 
-#     return render_template('edit_job.html', job=job)
+    return render_template('manage_jobs.html', job=job)
 
-# # UPDATE JOB (POST)
-# @app.route('/update_job/<int:job_id>', methods=['POST'])
-# def update_job(job_id):
-#     if 'company_id' not in session:
-#         return redirect('/company')
+# UPDATE JOB (POST)
+@app.route('/update_job/<int:job_id>', methods=['POST'])
+def update_job(job_id):
+    if 'company_id' not in session:
+        return redirect('/company')
 
-#     cid = session['company_id']
+    cid = session['company_id']
 
-#     title = request.form.get('title')
-#     description = request.form.get('description')
-#     location = request.form.get('location')
-#     salary = request.form.get('salary')
-#     job_type = request.form.get('job_type')
+    title = request.form.get('title')
+    description = request.form.get('description')
+    location = request.form.get('location')
+    salary = request.form.get('salary')
+    job_type = request.form.get('job_type')
 
-#     cursor.execute("""
-#         UPDATE jobs SET title=%s, description=%s, location=%s, salary=%s, job_type=%s
-#         WHERE id=%s AND company_id=%s
-#     """, (title, description, location, salary, job_type, job_id, cid))
-#     conn.commit()
+    cursor.execute("""
+        UPDATE jobs SET title=%s, description=%s, location=%s, salary=%s, job_type=%s
+        WHERE id=%s AND company_id=%s
+    """, (title, description, location, salary, job_type, job_id, cid))
+    conn.commit()
 
-#     return redirect('/manage_jobs')
+    return redirect('/manage_jobs')
+
+
+
+
+# Application
+
+
+
 
 
 
