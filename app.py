@@ -51,9 +51,13 @@ def dashboard():
 
         cursor.execute("SELECT fName FROM users WHERE Id=%s", (session['Id'],))
         user = cursor.fetchone()
+
+        cursor.execute("SELECT COUNT(*) FROM quizzes")
+        quiz_count = cursor.fetchone()[0]
+
         cursor.close()
         conn.close()
-        return render_template('dashboard.html', user={'fName': user[0]})
+        return render_template('dashboard.html', user={'fName': user[0]}, quiz_count=quiz_count)
     else:
         return redirect('/register')
 
@@ -133,19 +137,28 @@ def login_validation():
     cursor = conn.cursor()
 
     cursor.execute(
-    "SELECT * FROM users  WHERE email=%s AND password=%s",
+    "SELECT Id,fName,role FROM users  WHERE email=%s AND password=%s",
     (email, password)
     )
     
-    users = cursor.fetchall()
+    users = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    if len(users)>0:
-        session['Id'] = users[0][0]
-        return redirect('/dashboard')
-    else:
-        return redirect('/register')
+    if users:
+        session['Id'] =users[0]
+        session['name'] =users[1]
+        session['role'] =users[2]
+
+        if users[2] =="admin":
+          return redirect('/admin_dashboard')
+        elif users[2] == "company":
+          return redirect('/company_dashboard')  
+        else:
+          return redirect('/dashboard')  
+
+    
+    return redirect('/register')
     
 
 
@@ -155,7 +168,7 @@ def add_user():
     lName = request.form.get('lName')
     email = request.form.get('email')
     password = request.form.get('password')
-    role = request.form.get('role')
+    role = 'user'
 
     conn = get_db()
     cursor = conn.cursor()
@@ -174,7 +187,7 @@ def add_user():
     cursor.close()
     conn.close()
 
-    session['Id'] = myuser[0][0]
+    session['Id'] = myuser[0]
     return redirect('/dashboard')
 
 
@@ -183,6 +196,211 @@ def add_user():
 def logout():
     session.pop('Id', None)
     return redirect('/')
+
+
+
+# Admin
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT fName FROM users WHERE Id=%s", (session['Id'],))
+    admin = cursor.fetchone()[0]
+
+    # count ONLY normal users (exclude admin)
+    cursor.execute("SELECT COUNT(*) FROM users WHERE role='user'")
+    users = cursor.fetchone()[0]
+
+    # UNIQUE QUIZ ATTEMPTS (user + quiz combination)
+    cursor.execute("SELECT COUNT(DISTINCT user_id, quiz_id) FROM quiz_results")
+    attempts = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(DISTINCT user_id) FROM quiz_results")
+    active_users = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    return render_template("admin_dashboard.html", users=users, attempts=attempts, admin_name=admin, active_users=active_users)
+
+@app.route('/create_quiz', methods=['GET','POST'])
+def create_quiz():
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO quizzes (title, created_by)
+            VALUES (%s, %s)
+        """, (title, session['Id']))
+
+        quiz_id = cursor.lastrowid
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+
+        return redirect(f'/add_question/{quiz_id}')
+
+    return render_template("create_quiz.html")
+
+
+@app.route('/add_question/<int:quiz_id>', methods=['GET', 'POST'])
+def add_question(quiz_id):
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        data = request.form
+
+        cursor.execute("""
+            INSERT INTO quiz_questions
+            (quiz_id, question, option_a, option_b, option_c, option_d, correct_option)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            quiz_id,
+            data['question'],
+            data['a'],
+            data['b'],
+            data['c'],
+            data['d'],
+            data['correct']
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return redirect(f'/add_question/{quiz_id}')
+
+    cursor.close()
+    conn.close()
+
+    return render_template("add_questions.html", quiz_id=quiz_id)
+
+
+
+@app.route('/quiz_list')
+def quiz_list():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM quizzes")
+    quizzes = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("Quiz_list.html", quizzes=quizzes)
+
+
+@app.route('/quizzes')
+def quizzes():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM quizzes")
+    quizzes = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("quizzes.html", quizzes=quizzes)
+
+
+@app.route('/take_quiz/<int:quiz_id>')
+def take_quiz(quiz_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT title FROM quizzes WHERE id=%s", (quiz_id,))
+    quiz = cursor.fetchone()
+
+    cursor.execute("SELECT * FROM quiz_questions WHERE quiz_id=%s", (quiz_id,))
+    questions = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "take_quiz.html",
+        quiz_id=quiz_id,
+        quiz_title=quiz[0] if quiz else "Quiz",
+        questions=questions,
+        total_questions=len(questions)
+    )
+
+
+@app.route('/submit_quiz/<int:quiz_id>', methods=['POST'])
+def submit_quiz(quiz_id):
+
+    if 'Id' not in session:
+        return "User not logged in. Please login to take the quiz.", 401
+    
+    if session.get('role') != 'user':
+        return "Only users can submit quiz", 403
+
+    user_id = session['Id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, correct_option FROM quiz_questions WHERE quiz_id=%s", (quiz_id,))
+    questions = cursor.fetchall()
+
+    score = 0
+    total = len(questions)
+
+    for q in questions:
+        qid = str(q[0])
+        if request.form.get(qid) == q[1]:
+            score += 1
+
+    cursor.execute("""
+        INSERT INTO quiz_results (user_id, quiz_id, score, total)
+        VALUES (%s,%s,%s,%s)
+    """, (user_id, quiz_id, score, total))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return f"Score: {score}/{total}"
+
+@app.route('/view_results')
+def view_results():
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT users.fName, quizzes.title, quiz_results.score, quiz_results.total
+        FROM quiz_results
+        JOIN users ON users.Id = quiz_results.user_id
+        JOIN quizzes ON quizzes.id = quiz_results.quiz_id
+    """)
+
+    results = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("view_results.html", results=results)
 
 
 
