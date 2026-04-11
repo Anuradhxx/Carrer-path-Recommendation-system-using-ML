@@ -1,18 +1,34 @@
-from flask import Flask, render_template,request,redirect,session
+from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import os
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-conn=mysql.connector.connect(
-    host="localhost",
-    user="root",          
-    password="",  
-    database="login"
-)
+# conn=mysql.connector.connect(
+#     host="localhost",
+#     user="root",          
+#     password="",  
+#     database="smart_career_database"
+# )
 
-cursor = conn.cursor()
+# cursor = conn.cursor()
+
+
+def get_db():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_career_database"
+    )
+
+
+
+
+
+
 
 @app.route('/')
 def home():
@@ -30,8 +46,13 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     if 'Id' in session:
+        conn = get_db()
+        cursor = conn.cursor()
+
         cursor.execute("SELECT fName FROM users WHERE Id=%s", (session['Id'],))
         user = cursor.fetchone()
+        cursor.close()
+        conn.close()
         return render_template('dashboard.html', user={'fName': user[0]})
     else:
         return redirect('/register')
@@ -39,10 +60,13 @@ def dashboard():
 
 @app.route('/profile', methods=['GET'])
 def profile():
-    if 'Id'not in session:
+    if 'Id' not in session:
         return redirect('/')
     
     user_id = session['Id']
+
+    conn = get_db()
+    cursor = conn.cursor()
 
     #user info
     cursor.execute("SELECT fName, lName, email, created_at FROM users WHERE Id=%s", (user_id,))
@@ -51,6 +75,9 @@ def profile():
     #use specific progress
     cursor.execute("SELECT skill, progress,updated_at FROM progress WHERE user_id = %s", (user_id,))
     progress_data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template('profile.html',
                         user={
@@ -69,7 +96,11 @@ def add_progress():
 
     user_id = session['Id']
     skill = request.form.get('skill')
-    progress = int(request.form.get('progress'))
+    progress = int(request.form.get('progress')or 0)
+
+    conn = get_db()
+    cursor = conn.cursor()
+
 
     # check if skill already exists → update
     cursor.execute("SELECT * FROM progress WHERE user_id=%s AND skill=%s", (user_id, skill))
@@ -87,6 +118,9 @@ def add_progress():
 
     conn.commit()
 
+    cursor.close()
+    conn.close()
+
     return {"status": "success"}
 
 
@@ -95,6 +129,8 @@ def login_validation():
     email = request.form.get('email')
     password = request.form.get('password')
 
+    conn = get_db()
+    cursor = conn.cursor()
 
     cursor.execute(
     "SELECT * FROM users  WHERE email=%s AND password=%s",
@@ -102,6 +138,9 @@ def login_validation():
     )
     
     users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
     if len(users)>0:
         session['Id'] = users[0][0]
         return redirect('/dashboard')
@@ -118,13 +157,23 @@ def add_user():
     password = request.form.get('password')
     role = request.form.get('role')
 
-    cursor.execute(""" INSERT INTO  `users` (`Id` , `fName`, `lName`, `email`, `password`, `role`) VALUES 
-                  (NULL, '{}', '{}', '{}', '{}', '{}') """. format(fName, lName, email, password,role))
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+                   INSERT INTO users (fName, lName, email, password, role) 
+                   VALUES (%s, %s, %s, %s, %s)
+                   """, (fName, lName, email, password, role))
+    
     
     conn.commit()
 
-    cursor.execute("""SELECT * FROM `users` WHERE `email` LIKE '{}'""".format(email))
-    myuser=cursor.fetchall()
+    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+    myuser=cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
     session['Id'] = myuser[0][0]
     return redirect('/dashboard')
 
@@ -153,6 +202,9 @@ def company_register():
     website = request.form.get('website')
     location = request.form.get('location')
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     cursor.execute("""
         INSERT INTO company (Cname, Cemail, Password, Website, location)
         VALUES (%s, %s, %s, %s, %s)
@@ -163,6 +215,9 @@ def company_register():
     # login automatically
     cursor.execute("SELECT * FROM company WHERE Cemail=%s", (Cemail,))
     company = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
     session['company_id'] = company[0]
     return redirect('/company_dashboard')
 
@@ -173,11 +228,16 @@ def company_login():
     Cemail = request.form.get('Cemail')
     password = request.form.get('password')
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     cursor.execute(
         "SELECT * FROM company WHERE Cemail=%s AND Password=%s",
         (Cemail, password)
     )
     company = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if company:
         session['company_id'] = company[0]
         return redirect('/company_dashboard')
@@ -191,9 +251,15 @@ def company_login():
 def company_dashboard():
     if 'company_id' not in session:
         return redirect('/company')
+    
+    conn= get_db()
+    cursor=conn.cursor()
 
     cursor.execute("SELECT Cname FROM company WHERE Id=%s", (session['company_id'],))
     company = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
 
     if company:
         return render_template("company_dashboard.html", company_name=company[0])
@@ -218,6 +284,9 @@ def post_job():
 
     cid = session['company_id']
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     cursor.execute("""
         SELECT id, title, description, location, salary, job_type 
         FROM jobs 
@@ -226,6 +295,9 @@ def post_job():
     """, (cid,))
 
     jobs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template('post_job.html', jobs=jobs)
 
@@ -247,6 +319,9 @@ def submit_job():
     # BASIC VALIDATION (don't skip this)
     if not title or not description:
         return "Title and Description required"
+    
+    conn = get_db()
+    cursor = conn.cursor()
 
     cursor.execute("""
         INSERT INTO jobs (company_id, title, description, location, salary, job_type)
@@ -254,6 +329,9 @@ def submit_job():
     """, (cid, title, description, location, salary, job_type))
 
     conn.commit()
+
+    cursor.close()
+    conn.close()
 
     return redirect('/company_dashboard')
 
@@ -268,9 +346,15 @@ def manage_jobs():
 
     cid = session['company_id']
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     # Fetch all jobs for this company
     cursor.execute("SELECT id, title, description, job_type, location, salary, created_at FROM jobs WHERE company_id=%s ORDER BY created_at DESC", (cid,))
     jobs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template('manage_jobs.html', jobs=jobs)
 
@@ -281,10 +365,16 @@ def delete_job(job_id):
         return redirect('/company')
 
     cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
     
     # Ensure company owns the job
     cursor.execute("DELETE FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
     conn.commit()
+
+    cursor.close()
+    conn.close()
     
     return redirect('/manage_jobs')
 
@@ -295,8 +385,14 @@ def edit_job(job_id):
         return redirect('/company')
 
     cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
     cursor.execute("SELECT id, title, description, location, salary, job_type FROM jobs WHERE id=%s AND company_id=%s", (job_id, cid))
     job = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
 
     if not job:
         return "Job not found or unauthorized"
@@ -317,11 +413,17 @@ def update_job(job_id):
     salary = request.form.get('salary')
     job_type = request.form.get('job_type')
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     cursor.execute("""
         UPDATE jobs SET title=%s, description=%s, location=%s, salary=%s, job_type=%s
         WHERE id=%s AND company_id=%s
     """, (title, description, location, salary, job_type, job_id, cid))
     conn.commit()
+
+    cursor.close()
+    conn.close()
 
     return redirect('/manage_jobs')
 
@@ -329,6 +431,156 @@ def update_job(job_id):
 
 
 # Application
+@app.route('/company_applications')
+def company_applications():
+    if 'company_id' not in session:
+        return redirect('/company')
+
+    cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            applications.id,
+            jobs.title,
+            users.fName,
+            users.email,
+            applications.cover_letter,
+            applications.resume,
+            applications.status,
+            applications.applied_at
+        FROM applications
+        JOIN jobs ON applications.job_id = jobs.id
+        JOIN users ON applications.user_id = users.Id
+        WHERE applications.company_id = %s
+        ORDER BY applications.applied_at DESC
+    """, (cid,))
+
+    applications = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("company_applications.html", applications=applications)
+
+
+@app.route('/company_applications/<status>')
+def filter_applications(status):
+    if 'company_id' not in session:
+        return redirect('/company')
+
+    cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            applications.id,
+            jobs.title,
+            users.fName,
+            users.email,
+            applications.status,
+            applications.applied_at
+        FROM applications
+        JOIN jobs ON applications.job_id = jobs.id
+        JOIN users ON applications.user_id = users.Id
+        WHERE applications.company_id = %s AND applications.status = %s
+        ORDER BY applications.applied_at DESC
+    """, (cid, status))
+
+    applications = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("company_applications.html", applications=applications)
+
+
+@app.route('/update_status/<int:app_id>/<status>')
+def update_status(app_id, status):
+    if 'company_id' not in session:
+        return redirect('/company')
+
+    cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE applications
+        SET status = %s
+        WHERE id = %s AND company_id = %s
+    """, (status, app_id, cid))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return redirect('/company_applications')
+
+
+
+# Payment
+@app.route('/internship_payments')
+def internship_payments():
+    if 'company_id' not in session:
+        return redirect('/company')
+
+    cid = session['company_id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            p.id,
+            u.fName,
+            u.email,
+            p.amount,
+            p.payment_status,
+            p.payment_method,
+            p.created_at
+        FROM internship_payments p
+        JOIN users u ON p.user_id = u.Id
+        WHERE p.company_id = %s
+        ORDER BY p.created_at DESC
+    """, (cid,))
+
+    payments = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("internship_payments.html", payments=payments)
+
+
+@app.route('/verify_payment/<int:pid>')
+def verify_payment(pid):
+    if 'company_id' not in session:
+        return redirect('/company')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE internship_payments
+        SET payment_status='Active'
+        WHERE id=%s
+    """, (pid,))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return redirect('/internship_payments')
+
+
+
 
 
 
