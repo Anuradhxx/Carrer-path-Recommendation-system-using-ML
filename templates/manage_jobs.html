@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Jobs</title>
+
+    <link rel="stylesheet" href="../static/css/manage_jobs.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Manage Posted Jobs</h2>
+
+        <!-- EDIT FORM -->
+        <form id="editForm" method="POST" style="display:none;">
+
+            <h3>Edit Job</h3>
+
+            <label>Job Title</label>
+            <input type="text" name="title" id="title" placeholder="Title" required>
+            <label>Description</label>
+            <textarea name="description" id="description" placeholder="Description" required></textarea>
+            <label>Location</label>
+            <input type="text" name="location" id="location" placeholder="Location">
+            <label>Salary / Stipend</label>
+            <input type="text" name="salary" id="salary" placeholder="Salary">
+
+            <label>Type</label>
+            <select name="job_type" id="job_type">
+                <option value="Job">Job</option>
+                <option value="Internship">Internship</option>
+            </select>
+
+            <button type="submit">Update Job</button>
+            <button type="button" onclick="hideForm()">Cancel</button>
+        </form>
+
+        <hr>
+
+        <!-- TABLE -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>job Type</th>
+                    <th>Location</th>
+                    <th>Salary</th>
+                    <th>Posted Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% if jobs|length == 0 %}
+                <tr>
+                    <td colspan="7" style="text-align:center;">No jobs posted</td>
+                </tr>
+                {% else %}
+
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ job[1] }}</td>
+                    <td>{{ job[2] }}</td>
+                    <td>{{ job[3] }}</td>
+                    <td>{{ job[4] }}</td>
+                    <td>{{ job[5] }}</td>
+                    <td>{{ job[6] }}</td>
+                    <td>
+                        <button class="editBtn" data-id="{{ job[0] }}" data-title="{{ job[1] }}"
+                            data-description="{{ job[2] }}" data-location="{{ job[4] }}" data-salary="{{ job[5] }}"
+                            data-type="{{ job[3] }}">
+                            Edit
+                        </button>
+
+                        <a href="/delete_job/{{ job[0] }}" onclick="return confirm('Delete this job?')">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% endif %}
+
+            </tbody>
+        </table>
+
+        <a href="/company_dashboard" class="back">← Back to Dashboard</a>
+
+    </div>
+
+    <!-- JS -->
+    <script>
+        const buttons = document.querySelectorAll('.editBtn');
+        const form = document.getElementById('editForm');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+
+                form.style.display = "block";
+
+                document.getElementById('title').value = btn.dataset.title;
+                document.getElementById('description').value = btn.dataset.description;
+                document.getElementById('location').value = btn.dataset.location;
+                document.getElementById('salary').value = btn.dataset.salary;
+                document.getElementById('job_type').value = btn.dataset.type;
+
+                form.action = `/update_job/${btn.dataset.id}`;
+            });
+        });
+
+        function hideForm() {
+            document.getElementById('editForm').style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>

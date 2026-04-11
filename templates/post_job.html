@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Post Jobs</title>
+
+    <link rel="stylesheet" href="../static/css/post_job.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Post a Job / Internship</h2>
+
+        <!-- JOB FORM -->
+        <form id="jobForm" action="/submit_job" method="POST">
+            <input type="hidden" name="job_id" id="job_id">
+
+            <label>Job Title</label>
+            <input type="text" name="title" id="title" placeholder="e.g. Data Analyst Intern" required>
+
+            <label>Description</label>
+            <textarea name="description" id="description" placeholder="Write job details..." required></textarea>
+
+            <label>Location</label>
+            <input type="text" name="location" id="location" placeholder="e.g. Remote / Jamshedpur">
+
+            <label>Salary / Stipend</label>
+            <input type="text" name="salary" id="salary" placeholder="e.g. ₹10,000/month">
+
+            <label>Type</label>
+            <select name="job_type" id="job_type" placeholder="e.g JOb/Internship">
+                <option value="Job">Job</option>
+                <option value="Internship">Internship</option>
+            </select>
+
+            <button type="submit" id="submitBtn">Post</button>
+        </form>
+
+
+
+        <a href="/company_dashboard" class="back">← Back to Dashboard</a>
+
+
+    </div>
+
+
+
+    <script src="../static/js/post_job.js"></script>
+
+
+</body>
+
+
+</html>
