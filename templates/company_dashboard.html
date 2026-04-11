@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Dashboard</title>
+
+    <link rel="stylesheet" href="../static/css/comp_dash.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+
+<nav class="navbar">
+    <h2>TalentFlow</h2> 
+    <div>
+        <a href="/company_logout">Logout</a>
+    </div>
+    
+</nav>
+
+
+<div class="container">
+
+    <h1>Welcome, {{company_name}}</h1>
+    <p class="sub">Manage your Hiring, Quizzes and Applications</p>
+
+    <div class="grid">
+
+        <!-- POST JOB -->
+        <div class="card">
+            <i data-lucide="briefcase"></i>
+            <h3>Post Jobs / Internship</h3>
+            <p>Create new job or internship listing</p>
+            <a href="/post_job" class="btn">Go →</a>
+        </div>
+
+        <!-- MANAGE JOBS -->
+        <div class="card">
+            <i data-lucide="list"></i>
+            <h3>Manage Jobs</h3>
+            <p>Edit or delete your posted jobs</p>
+            <a href="/manage_jobs" class="btn">Open →</a>
+        </div>
+
+        <!-- VIEW APPLICATIONS --> 
+        <div class="card">
+            <i data-lucide="users"></i>
+            <h3>Applications</h3>
+            <p>Track candidate applications</p>
+            <a href="/company_applications" class="btn">View →</a>
+        </div>
+
+        <!-- Payment for Internship -->
+        <div class="card">
+            <i data-lucide="wallet"></i>
+            <h3>Internship Payment</h3>
+            <p>Complete your payment to activate internship access</p>
+            <a href="/internship_payments" class="btn">Check Payment →</a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
