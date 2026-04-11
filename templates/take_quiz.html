@@ -1,0 +1,290 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Take Quiz</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0b1220;
+    --card:#111827;
+    --border:#1f2937;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --primary:#3b82f6;
+    --primary-hover:#2563eb;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* HEADER */
+.header{
+    padding:25px 40px;
+    border-bottom:1px solid var(--border);
+}
+
+.header h1{
+    font-size:20px;
+}
+
+/* CONTAINER */
+.container{
+    max-width:800px;
+    margin:30px auto;
+    padding:0 20px;
+}
+
+/* QUESTION CARD */
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:18px;
+}
+
+/* QUESTION */
+.question{
+    font-weight:600;
+    margin-bottom:12px;
+}
+
+/* OPTIONS */
+.option{
+    display:block;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid var(--border);
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    border-color:var(--primary);
+    background:#0f1a2e;
+}
+
+input[type="radio"]{
+    margin-right:8px;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:12px;
+    background:var(--primary);
+    border:none;
+    color:white;
+    font-weight:600;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+button:hover{
+    background:var(--primary-hover);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Take Assessment</h1>
+</div>
+
+<div class="container">
+
+<form method="POST" action="/submit_quiz/{{ quiz_id }}">
+
+    {% for q in questions %}
+
+    <div class="card">
+
+        <div class="question">
+            {{ q[2] }}
+        </div>
+
+        <label class="option">
+            <input type="radio" name="{{ q[0] }}" value="a" required>
+            {{ q[3] }}
+        </label>
+
+        <label class="option">
+            <input type="radio" name="{{ q[0] }}" value="b">
+            {{ q[4] }}
+        </label>
+
+        <label class="option">
+            <input type="radio" name="{{ q[0] }}" value="c">
+            {{ q[5] }}
+        </label>
+
+        <label class="option">
+            <input type="radio" name="{{ q[0] }}" value="d">
+            {{ q[6] }}
+        </label>
+
+    </div>
+
+    {% endfor %}
+
+    <button type="submit">Submit Quiz</button>
+
+</form>
+
+</div>
+
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Take Quiz</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Inter;
+    background:#0f172a;
+    color:white;
+}
+
+.container{
+    max-width:900px;
+    margin:40px auto;
+    padding:20px;
+}
+
+/* HEADER */
+.header{
+    background:#111827;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+    border:1px solid #1f2937;
+}
+
+.header h1{
+    margin:0;
+    font-size:22px;
+}
+
+.meta{
+    margin-top:8px;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+/* QUESTION CARD */
+.q-card{
+    background:#111827;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:15px;
+    border:1px solid #1f2937;
+}
+
+.q-title{
+    font-size:16px;
+    margin-bottom:12px;
+}
+
+/* OPTIONS */
+.option{
+    display:block;
+    padding:10px;
+    margin:6px 0;
+    background:#0f172a;
+    border:1px solid #1f2937;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.option:hover{
+    border-color:#3b82f6;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:12px;
+    margin-top:20px;
+    background:#3b82f6;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2563eb;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>{{ quiz_title }}</h1>
+        <div class="meta">
+            Total Questions: {{ total_questions }}
+        </div>
+    </div>
+
+    <!-- QUIZ FORM -->
+    <form method="POST" action="/submit_quiz/{{ quiz_id }}">
+
+        {% for q in questions %}
+        <div class="q-card">
+
+            <div class="q-title">
+                Q{{ loop.index }}. {{ q[2] }}
+            </div>
+
+            <label class="option">
+                <input type="radio" name="{{ q[0] }}" value="a" required> {{ q[3] }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q[0] }}" value="b"> {{ q[4] }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q[0] }}" value="c"> {{ q[5] }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q[0] }}" value="d"> {{ q[6] }}
+            </label>
+
+        </div>
+        {% endfor %}
+
+        <button type="submit">Submit Quiz</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+<title>Quizzes</title>
+
+<style>
+body{
+    font-family:Inter;
+    background:#0f172a;
+    color:white;
+    margin:0;
+}
+
+.container{
+    padding:30px;
+}
+
+.card{
+    background:#111827;
+    padding:20px;
+    margin:15px 0;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+a{
+    color:white;
+    text-decoration:none;
+    background:#3b82f6;
+    padding:8px 12px;
+    border-radius:6px;
+}
+
+.back {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.back:hover {
+    color: var(--muted);
+}
+</style>
+
+</head>
+
+<body>
+    
+
+<div class="container">
+    <h1>All Quizzes</h1>
+
+
+    {% for q in quizzes %}
+    <div class="card">
+        <div>
+            <h3>{{ q[1] }}</h3>
+        </div>
+
+        <div>
+            <a href="/add_question/{{ q[0] }}">Add Questions</a>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<a href="/admin_dashboard" class="back">← Back to Dashboard</a>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Management</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0b1220;
+    --panel:#111827;
+    --border:#1f2937;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --primary:#3b82f6;
+    --primary-hover:#2563eb;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* HEADER */
+.header{
+    padding:30px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header h1{
+    font-size:22px;
+    font-weight:600;
+}
+
+.header p{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+/* CONTAINER */
+.container{
+    padding:0 40px 40px;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:18px;
+}
+
+/* CARD */
+.card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+    height:160px;          
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    transition:0.2s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    border-color:#2b3b55;
+}
+
+/* TITLE */
+.title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+/* META */
+.meta{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:14px;
+}
+
+/* ACTIONS */
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    font-size:12px;
+    padding:8px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:500;
+    transition:0.2s;
+    display:inline-block;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:white;
+}
+
+.btn-primary:hover{
+    background:var(--primary-hover);
+}
+
+.btn-secondary{
+    background:#1f2937;
+    color:var(--text);
+}
+
+.btn-secondary:hover{
+    background:#263244;
+}
+
+/* EMPTY STATE */
+.empty{
+    text-align:center;
+    margin-top:60px;
+    color:var(--muted);
+}
+
+/* BACK */
+.back{
+    display:block;
+    text-align:center;
+    margin:30px 0;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:13px;
+}
+
+.back:hover{
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div>
+        <h1>Quiz Management</h1>
+        <p>Create, manage and organize all quizzes</p>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    {% if quizzes %}
+
+    <div class="grid">
+
+        {% for q in quizzes %}
+        <div class="card">
+
+            <div class="title">{{ q[1] }}</div>
+
+            <div class="meta">
+                Quiz ID: {{ q[0] }}
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-primary" href="/add_question/{{ q[0] }}">
+                    + Add Questions
+                </a>
+
+                <a class="btn btn-secondary" href="/take_quiz/{{ q[0] }}">
+                    Preview
+                </a>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty">
+        No quizzes found. Create your first quiz.
+    </div>
+
+    {% endif %}
+
+</div>
+
+<a href="/admin_dashboard" class="back">← Back to Dashboard</a>
+
+</body>
+</html>

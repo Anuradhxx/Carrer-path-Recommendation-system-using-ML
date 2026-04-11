@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Results</title>
+
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+/* MAIN CONTAINER */
+.container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+/* TITLE */
+h1 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* TABLE WRAPPER EFFECT */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111827;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* HEADER */
+th {
+    background: #1f2937;
+    color: #cbd5e1;
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* ROWS */
+td {
+    padding: 14px 16px;
+    border-top: 1px solid #1f2937;
+    color: #e5e7eb;
+    font-size: 14px;
+}
+
+/* ROW HOVER */
+tr:hover td {
+    background: #0f172a;
+    transition: 0.2s ease;
+}
+
+/* SCORE HIGHLIGHT */
+td:nth-child(3) {
+    font-weight: 600;
+    color: #60a5fa;
+}
+
+/* TOTAL HIGHLIGHT */
+td:nth-child(4) {
+    font-weight: 600;
+    color: #34d399;
+}
+
+/* RESPONSIVE SCROLL (IMPORTANT) */
+.container {
+    overflow-x: auto;
+}
+
+/* MODERN CARD FEEL */
+table {
+    border: 1px solid #1f2937;
+}
+
+/* EMPTY STATE (optional future use) */
+.empty {
+    text-align: center;
+    padding: 30px;
+    color: #64748b;
+}
+
+.back {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.back:hover {
+    color: var(--muted);
+}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Quiz Results</h1>
+
+    <table border="1" cellpadding="10">
+
+        <tr>
+            <th>User</th>
+            <th>Quiz</th>
+            <th>Score</th>
+            <th>Total</th>
+        </tr>
+
+        {% for r in results %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+<a href="/admin_dashboard" class="back">← Back to Dashboard</a>
+
+</body>
+</html>
