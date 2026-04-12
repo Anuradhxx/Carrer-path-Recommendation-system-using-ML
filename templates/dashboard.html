@@ -30,7 +30,7 @@
 
       <ul class="nav-menu">
         <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
-        <li> <a href="#"><i data-lucide="book-open-check"></i> Assessment </a></li>
+        <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
         <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
         <li> <a href="#"><i data-lucide="trending-up"></i> Skills </a></li>
         <li> <a href="#"><i data-lucide="briefcase-business"></i> Market </a></li>
@@ -70,7 +70,7 @@
             <i data-lucide="clipboard-pen"></i>
           </div>
           <div>
-            <h2>1</h2>
+            <h2>{{ quiz_count }}</h2>
             <p>Assessments</p>
           </div>
         </div>
@@ -112,7 +112,7 @@
           Answer a few questions about your skills, interests, and goals to get personalized career recommendations.
         </p>
 
-        <a href="#" class="btn primary">
+        <a href="/quizzes" class="btn primary">
           Start Assessment →
         </a>
       </div>
@@ -121,6 +121,8 @@
         <div class="icon orange big">
           <i data-lucide="brain-circuit"></i>
         </div>
+
+
 
         <h3>View Recommendations</h3>
         <p>
