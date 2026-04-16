@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications | Company Panel</title>
+
+    <link rel="stylesheet" href="../static/css/Application.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h2>Applications Panel</h2>
+    <a href="/company_dashboard">← Back</a>
+</nav>
+
+<div class="container">
+
+    <div class="card-header">
+        <h1>Candidate Applications</h1>
+        <p>Manage and track all applicants in one place</p>
+    </div>
+
+    <div class="filters">
+        <a href="/company_applications">All</a>
+        <a href="/company_applications/Applied">Applied</a>
+        <a href="/company_applications/Shortlisted">Shortlisted</a>
+        <a href="/company_applications/Interview">Interview</a>
+        <a href="/company_applications/Rejected">Rejected</a>
+    </div>
+
+    <br>
+
+    <table class="table">
+
+        <tr>
+            <th>Candidate</th>
+            <th>Job</th>
+            <th>Email</th>
+            <th>Cover Letter</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for a in applications %}
+        <tr>
+
+            <td>{{ a[2] }}</td>   <!-- Name -->
+            <td>{{ a[1] }}</td>   <!-- Job Title -->
+            <td>{{ a[3] }}</td>   <!-- Email -->
+
+            <td>
+                <details>
+                    <summary>View</summary>
+                    <p>{{ a[4] }}</p>
+                </details>
+            </td>
+
+            <td>
+                <span class="status {{ a[6] }}">
+                    {{ a[6] }}
+                </span>
+            </td>
+
+            <td class="actions">
+
+                <a class="shortlist" href="/update_status/{{ a[0] }}/Shortlisted">Shortlist</a>
+
+                <a class="interview" href="/update_status/{{ a[0] }}/Interview">Interview</a>
+
+                <a class="reject" href="/update_status/{{ a[0] }}/Rejected">Reject</a>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
