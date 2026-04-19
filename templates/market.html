@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Market Insights</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/market.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <div class="logo">
+                <div class="logo-circle">
+                    <i data-lucide="target"></i>
+                </div>
+                <span class="logo-text">CareerPath</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
+                <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
+                <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
+                <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="divider"></div>
+                <a href="#"><i data-lucide="moon"></i></a>
+                <a href="/profile"><i data-lucide="user-round"></i></a>
+                <a href="/logout"><i data-lucide="log-out"></i></a>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <div class="main-wrapper">
+
+        <div class="header">
+            <h1>Job Market Insights</h1>
+            <p>Stay updated with the latest career trends and opportunities</p>
+        </div>
+
+        <div class="trend-box">
+            <h2><i data-lucide="trending-up" class="icon green"></i>
+                Trending Careers</h2>
+
+            <div class="trend-grid">
+                {% for role in top_roles %}
+                <div class="trend-card">
+                    <h3>{{ role[0] }}</h3>
+                    <p class="growth">↗ +{{ loop.index * 5 }}%</p>
+                    <p class="salary">$ {{ role[1] }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h2>
+                <i data-lucide="archive-restore" class="icon green"></i>
+                In-Demand Skills
+            </h2>
+            <canvas id="skillsChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h2>
+                <i data-lucide="circle-dollar-sign" class="icon orange"></i>
+                Average Salary Trends
+            </h2>
+            <canvas id="salaryChart"></canvas>
+        </div>
+
+    </div>
+
+    <script id="data-script" type="application/json">
+{
+    "salaryTrend": {{ salary_trend | tojson }},
+    "topSkills": {{ top_skills | tojson }}
+}
+</script>
+
+    <script src="{{ url_for('static', filename='js/market.js') }}"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>
