@@ -1,8 +1,9 @@
 document.getElementById("addProgressBtn").addEventListener("click", () => {
-    const skill = document.getElementById("skillInput").value.trim();
-    const progress = document.getElementById("progressInput").value;
 
-    if (!skill || progress < 0 || progress > 100) {
+    const skill_id = document.getElementById("skillSelect").value;
+    const progress = parseInt(document.getElementById("progressInput").value);
+
+    if (!skill_id || isNaN(progress) || progress < 0 || progress > 100) {
         alert("Enter valid data");
         return;
     }
@@ -12,7 +13,7 @@ document.getElementById("addProgressBtn").addEventListener("click", () => {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `skill=${skill}&progress=${progress}`
+        body: `skill_id=${skill_id}&progress=${progress}`
     })
     .then(res => res.json())
     .then(data => {
