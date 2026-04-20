@@ -21,10 +21,9 @@ def get_db():
         host="localhost",
         user="root",
         password="",
-        database="smart_career_database"
+        database="smart_career_database",
+        port=3306
     )
-
-
 
 
 
@@ -77,7 +76,19 @@ def profile():
     user = cursor.fetchone()
 
     #use specific progress
-    cursor.execute("SELECT skill, progress,updated_at FROM progress WHERE user_id = %s", (user_id,))
+    # cursor.execute("SELECT skill, progress,updated_at FROM progress WHERE user_id = %s", (user_id,))
+    cursor.execute("""
+   SELECT 
+    us.id AS skill_id,
+    us.skill_name,
+    COALESCE(p.progress, 0) AS progress,
+    COALESCE(p.updated_at, us.created_at) AS updated_at
+FROM user_skills us
+LEFT JOIN progress p 
+    ON us.id = p.skill_id AND us.user_id = p.user_id
+WHERE us.user_id = %s
+ORDER BY us.created_at DESC
+""", (user_id,))
     progress_data = cursor.fetchall()
 
     cursor.close()
@@ -99,7 +110,7 @@ def add_progress():
         return {"status": "error"}
 
     user_id = session['Id']
-    skill = request.form.get('skill')
+    skill_id = request.form.get('skill_id')
     progress = int(request.form.get('progress')or 0)
 
     conn = get_db()
@@ -107,18 +118,18 @@ def add_progress():
 
 
     # check if skill already exists → update
-    cursor.execute("SELECT * FROM progress WHERE user_id=%s AND skill=%s", (user_id, skill))
+    cursor.execute("SELECT id FROM progress WHERE user_id=%s AND skill_id=%s", (user_id, skill_id))
     existing = cursor.fetchone()
 
     if existing:
         cursor.execute("""
-        UPDATE progress SET progress=%s WHERE user_id=%s AND skill=%s
-        """, (progress, user_id, skill))
+        UPDATE progress SET progress=%s WHERE user_id=%s AND skill_id=%s
+        """, (progress, user_id, skill_id))
     else:
         cursor.execute("""
-        INSERT INTO progress (user_id, skill, progress)
+        INSERT INTO progress (user_id, skill_id, progress)
         VALUES (%s, %s, %s)
-        """, (user_id, skill, progress))
+        """, (user_id, skill_id, progress))
 
     conn.commit()
 
@@ -312,7 +323,20 @@ def quizzes():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM quizzes")
+    # cursor.execute("SELECT * FROM quizzes")
+    # quizzes = cursor.fetchall()
+
+    cursor.execute("""
+    SELECT 
+        q.id,
+        q.title,
+        COUNT(qq.id) AS total_questions
+    FROM quizzes q
+    LEFT JOIN quiz_questions qq 
+        ON q.id = qq.quiz_id
+    GROUP BY q.id, q.title
+""")
+
     quizzes = cursor.fetchall()
 
     cursor.close()
@@ -798,9 +822,143 @@ def verify_payment(pid):
     return redirect('/internship_payments')
 
 
+# MARKET
+@app.route('/market')
+def market():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT YEAR(posted_date), AVG(salary)
+        FROM job_market_data
+        GROUP BY YEAR(posted_date)
+        ORDER BY YEAR(posted_date)
+    """)
+    salary_trend = cursor.fetchall()
+
+    cursor.execute("""
+       SELECT skill, COUNT(job_id) as demand
+       FROM job_skills
+       GROUP BY skill
+       ORDER BY demand DESC
+       LIMIT 5
+    """)
+    top_skills = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT job_role, AVG(salary)
+        FROM job_market_data
+        GROUP BY job_role
+        ORDER BY AVG(salary) DESC
+        LIMIT 5
+    """)
+    top_roles = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) FROM job_market_data")
+    total_jobs = cursor.fetchone()[0]
+
+
+    salary_trend = [(int(y), float(s)) for y, s in salary_trend]
+    top_skills = [(str(skill), int(c)) for skill, c in top_skills]
+    top_roles = [(str(role), float(s)) for role, s in top_roles]
+
+    cursor.close()
+    conn.close()
+
+    return render_template("market.html",
+        salary_trend=salary_trend,
+        top_skills=top_skills,
+        top_roles=top_roles,
+        total_jobs=total_jobs
+    )
+    
 
 
 
+# Skillls
+@app.route('/skills')
+def skills():
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, skill_name, skill_type, created_at
+        FROM user_skills
+        WHERE user_id=%s
+        ORDER BY created_at DESC
+    """, (user_id,))
+
+    skills = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("skills.html", skills=skills)
+
+
+@app.route('/add_skill', methods=['POST'])
+def add_skill():
+    if 'Id' not in session:
+        return {"status": "error"}
+
+    user_id = session['Id']
+    skill_name = request.form.get('skill_name')
+    skill_type = request.form.get('skill_type')
+
+    if not skill_name or len(skill_name.strip()) < 2:
+        return {"status": "error", "message": "Invalid skill"}
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # prevent duplicate
+    cursor.execute("""
+        SELECT id FROM user_skills
+        WHERE user_id=%s AND skill_name=%s
+    """, (user_id, skill_name.strip()))
+
+    if cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return {"status": "error", "message": "Skill exists"}
+
+    cursor.execute("""
+        INSERT INTO user_skills (user_id, skill_name, skill_type)
+        VALUES (%s,%s,%s)
+    """, (user_id, skill_name.strip(), skill_type))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"status": "success"}
+
+@app.route('/delete_skill/<int:skill_id>')
+def delete_skill(skill_id):
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM user_skills
+        WHERE id=%s AND user_id=%s
+    """, (skill_id, user_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect('/skills')
 
 
 
