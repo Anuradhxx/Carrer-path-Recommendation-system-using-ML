@@ -30,10 +30,10 @@
 
             <ul class="nav-menu">
                 <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
-                <li> <a href="#"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
                 <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
-                <li> <a href="#"><i data-lucide="trending-up"></i> Skills </a></li>
-                <li> <a href="#"><i data-lucide="briefcase-business"></i> Market </a></li>
+                <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
             </ul>
 
             <div class="nav-right">
@@ -88,8 +88,12 @@
 
                     <div class="input-row">
                         <div class="input-group">
-                            <label>Skill Name</label>
-                            <input type="text" id="skillInput" placeholder="e.g., Python">
+                            <label>Select Skill</label>
+                            <select id="skillSelect">
+                                {% for item in progress_data %}
+                                <option value="{{ item[0] }}">{{ item[1] }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="input-group">
@@ -112,14 +116,16 @@
                         {% for item in progress_data %}
                         <div class="progress-item">
                             <div style="display:flex; justify-content:space-between;">
-                                <span>{{ item[0] }}</span>
-                                <span>{{ item[1] }}%</span>
+                                <span>{{ item[1] }}</span>
+                                
+                                 <span>{{ item[2] if item[2] else 0 }}%</span>
                             </div>
                             <span class="last-updated">
-                                Last updated: {{ item[2].strftime('%d %b %Y') }}
+                                {{ item[3].strftime('%d %b %Y') }}
                             </span>
                             <div class="progress-bar">
-                                <div class="progress-fill" style="--width: {{ item[1] }}%"></div>
+                                <!-- <div class="progress-fill" style="--width: {{ item[2] }}%"></div> -->
+                                 <div class="progress-fill" style="--width: {{ item[2] if item[2] else 0 }}%"></div>
                             </div>
                         </div>
                         {% endfor %}
