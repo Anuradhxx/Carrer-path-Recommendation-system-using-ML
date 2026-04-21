@@ -888,13 +888,24 @@ def skills():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, skill_name, skill_type, created_at
+        SELECT id, skill_name, skill_type, proficiency
         FROM user_skills
         WHERE user_id=%s
         ORDER BY created_at DESC
     """, (user_id,))
 
-    skills = cursor.fetchall()
+    # skills = cursor.fetchall()
+    skills_raw = cursor.fetchall()
+
+    skills = [
+      {
+        "id": s[0],
+        "name": s[1],
+        "type": s[2],
+        "proficiency": s[3]
+       }
+       for s in skills_raw
+    ]
 
     cursor.close()
     conn.close()
@@ -910,34 +921,41 @@ def add_skill():
     user_id = session['Id']
     skill_name = request.form.get('skill_name')
     skill_type = request.form.get('skill_type')
+    proficiency = request.form.get('proficiency') or "Intermediate"
 
-    if not skill_name or len(skill_name.strip()) < 2:
-        return {"status": "error", "message": "Invalid skill"}
+    # if not skill_name or len(skill_name.strip()) < 2:
+    clean_skill = skill_name.strip()
+
+    if clean_skill == "":
+      return {"status": "error", "message": "Please enter a skill name"}
+
+    if len(clean_skill) > 50:
+      return {"status": "error", "message": "Skill name too long"}
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # prevent duplicate
     cursor.execute("""
         SELECT id FROM user_skills
         WHERE user_id=%s AND skill_name=%s
     """, (user_id, skill_name.strip()))
 
     if cursor.fetchone():
-        cursor.close()
-        conn.close()
         return {"status": "error", "message": "Skill exists"}
 
     cursor.execute("""
-        INSERT INTO user_skills (user_id, skill_name, skill_type)
-        VALUES (%s,%s,%s)
-    """, (user_id, skill_name.strip(), skill_type))
+        INSERT INTO user_skills (user_id, skill_name, skill_type, proficiency)
+        VALUES (%s,%s,%s,%s)
+    """, (user_id, skill_name.strip(), skill_type, proficiency))
 
     conn.commit()
+    skill_id = cursor.lastrowid
+
     cursor.close()
     conn.close()
 
-    return {"status": "success"}
+    return {"status": "success", "id": skill_id}
+
 
 @app.route('/delete_skill/<int:skill_id>')
 def delete_skill(skill_id):
