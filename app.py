@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import os
+import re
 
 
 app = Flask(__name__)
@@ -51,12 +52,33 @@ def dashboard():
         cursor.execute("SELECT fName FROM users WHERE Id=%s", (session['Id'],))
         user = cursor.fetchone()
 
-        cursor.execute("SELECT COUNT(*) FROM quizzes")
+        cursor.execute("""
+        SELECT COUNT(DISTINCT quiz_id) 
+        FROM quiz_results 
+        WHERE user_id=%s
+        """, (session['Id'],))
+
         quiz_count = cursor.fetchone()[0]
+
+        cursor.execute("""
+        SELECT title, match_score 
+        FROM recommendations r
+        JOIN careers c ON r.career_id = c.id
+        WHERE r.user_id=%s
+        ORDER BY match_score DESC
+        LIMIT 1
+        """, (session['Id'],))
+
+        top_career = cursor.fetchone()
+
+        # total skills tracked
+        cursor.execute("SELECT COUNT(*) FROM user_skills WHERE user_id=%s", (session['Id'],))
+        skill_count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
-        return render_template('dashboard.html', user={'fName': user[0]}, quiz_count=quiz_count)
+        return render_template('dashboard.html', user={'fName': user[0]}, quiz_count=quiz_count, top_career=top_career ,
+                                                                            skill_count=skill_count)
     else:
         return redirect('/register')
 
@@ -1119,7 +1141,8 @@ def compute_recommendations(user_id):
         })
 
     results.sort(key=lambda x: x["match_score"], reverse=True)
-    top = results[:10]
+    # top = results[:10]
+    top = [r for r in results if r["match_score"] >= 60]
 
     # DELETE then INSERT — use the SAME cursor/connection
     cursor.execute("DELETE FROM recommendations WHERE user_id=%s", (user_id,))
@@ -1331,6 +1354,226 @@ def tag_quiz(quiz_id):
                            quiz_id=quiz_id,
                            quiz_title=quiz[0] if quiz else "",
                            existing_tags=", ".join(existing_tags))
+
+
+# Analyze Skill Gap
+@app.route('/skill_gap')
+def skill_gap():
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, title FROM careers ORDER BY title")
+    careers = cursor.fetchall()
+
+    cursor.execute("SELECT skill_name, proficiency FROM user_skills WHERE user_id=%s", (user_id,))
+    user_skills = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT q.title, MAX(CASE WHEN qr.total > 0 THEN (qr.score * 100.0 / qr.total) ELSE 0 END)
+        FROM quiz_results qr
+        JOIN quizzes q ON qr.quiz_id = q.id
+        WHERE qr.user_id = %s
+        GROUP BY q.id, q.title
+    """, (user_id,))
+    quiz_scores = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('skill_gap.html',
+                           careers=careers,
+                           user_skills=user_skills,
+                           quiz_scores=quiz_scores)
+
+
+def skills_match(user_skill, required_skill):
+    """
+    Match user skill against a required skill.
+    Both inputs must already be lowercase stripped strings.
+
+    Rules:
+    - Exact match always works            : 'sql' == 'sql'       ✓
+    - Short skills (<=2 chars)            : exact only, no substr ✓
+    - Longer skills                       : word-boundary substr  ✓
+    - Case already handled by caller      : both are lowercased   ✓
+    """
+    us  = user_skill.strip()
+    req = required_skill.strip()
+
+    if not us or not req:
+        return False
+
+    # Exact match
+    if us == req:
+        return True
+
+    # Short skills — exact only (prevents 'r' matching 'learning')
+    if len(us) <= 2 or len(req) <= 2:
+        return False
+
+    # Word-boundary substring match
+    if re.search(r'\b' + re.escape(req) + r'\b', us):
+        return True
+    if re.search(r'\b' + re.escape(us) + r'\b', req):
+        return True
+
+    return False
+
+
+@app.route('/skill_gap_analysis', methods=['POST'])
+def skill_gap_analysis():
+    if 'Id' not in session:
+        return {"error": "not logged in"}, 401
+
+    user_id = session['Id']
+    career_id = request.form.get('career_id')
+
+    if not career_id:
+        return {"error": "no career selected"}, 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Target career
+    cursor.execute("""
+        SELECT title, required_skills, description, salary_min, salary_max, growth_potential
+        FROM careers WHERE id=%s
+    """, (career_id,))
+    career = cursor.fetchone()
+
+    if not career:
+        cursor.close()
+        conn.close()
+        return {"error": "career not found"}, 404
+
+    career_title, req_skills_str, description, sal_min, sal_max, growth = career
+
+    # Parse required skills — strip, lowercase each one
+    required_skills = [s.strip().lower() for s in (req_skills_str or "").split(",") if s.strip()]
+
+    # User skills from user_skills table — force lowercase
+    cursor.execute("""
+        SELECT LOWER(TRIM(skill_name)), proficiency
+        FROM user_skills
+        WHERE user_id=%s
+    """, (user_id,))
+    user_skill_map = {}
+    for row in cursor.fetchall():
+        skill_name = row[0]
+        proficiency = row[1]
+        user_skill_map[skill_name] = proficiency
+
+    # Quiz scores — also use quiz TITLE as an implicit skill signal
+    # e.g. if user scored 60%+ on "SQL" quiz, treat "sql" as a known skill
+    cursor.execute("""
+        SELECT LOWER(TRIM(q.title)),
+               MAX(CASE WHEN qr.total > 0 THEN ROUND(qr.score * 100.0 / qr.total) ELSE 0 END)
+        FROM quiz_results qr
+        JOIN quizzes q ON qr.quiz_id = q.id
+        WHERE qr.user_id = %s
+        GROUP BY q.id, q.title
+    """, (user_id,))
+
+    quiz_score_map = {}   # lowercase title -> score %
+    for row in cursor.fetchall():
+        quiz_score_map[row[0]] = float(row[1])
+
+    # Also fetch quiz tags as skill signals
+    cursor.execute("""
+        SELECT LOWER(TRIM(qt.tag)),
+               MAX(CASE WHEN qr.total > 0 THEN ROUND(qr.score * 100.0 / qr.total) ELSE 0 END)
+        FROM quiz_results qr
+        JOIN quiz_tags qt ON qr.quiz_id = qt.quiz_id
+        WHERE qr.user_id = %s
+        GROUP BY qt.tag
+    """, (user_id,))
+    for row in cursor.fetchall():
+        tag = row[0]
+        score = float(row[1])
+        # Merge: keep highest signal
+        if tag not in quiz_score_map or quiz_score_map[tag] < score:
+            quiz_score_map[tag] = score
+
+    # For display purposes — original quiz title casing and score
+    cursor.execute("""
+        SELECT q.title, MAX(CASE WHEN qr.total > 0 THEN ROUND(qr.score * 100.0 / qr.total) ELSE 0 END)
+        FROM quiz_results qr
+        JOIN quizzes q ON qr.quiz_id = q.id
+        WHERE qr.user_id = %s
+        GROUP BY q.id, q.title
+    """, (user_id,))
+    quiz_scores_display = {row[0]: float(row[1]) for row in cursor.fetchall()}
+
+    cursor.close()
+    conn.close()
+
+    proficiency_weight = {
+        "beginner":     0.25,
+        "intermediate": 0.6,
+        "advanced":     0.85,
+        "expert":       1.0
+    }
+
+    matched_skills = []
+    missing_skills = []
+    radar_data     = []
+
+    for req in required_skills:
+        matched   = False
+        user_prof = None
+        weight    = 0
+
+        # 1. Check user_skills table first
+        for us, prof in user_skill_map.items():
+            if skills_match(us, req):
+                matched   = True
+                user_prof = prof
+                weight    = proficiency_weight.get((prof or "").lower(), 0.25)
+                break
+
+        # 2. If not found in skills, check quiz scores as implicit skill evidence
+        #    e.g. scored 60%+ on "SQL" quiz → treat as knowing sql at beginner level
+        if not matched:
+            for quiz_key, score_pct in quiz_score_map.items():
+                if skills_match(quiz_key, req) and score_pct >= 50:
+                    matched   = True
+                    user_prof = "beginner"  # quiz-implied, not explicitly added
+                    weight    = (score_pct / 100) * 0.5  # partial credit from quiz
+                    break
+
+        radar_data.append({
+            "skill":          req,
+            "user_level":     round(weight * 100),
+            "required_level": 100
+        })
+
+        if matched:
+            matched_skills.append({
+                "name":        req,
+                "proficiency": user_prof or "beginner"
+            })
+        else:
+            missing_skills.append(req)
+
+    gap_score = round((len(matched_skills) / len(required_skills)) * 100) if required_skills else 0
+
+    return {
+        "career_title":   career_title,
+        "description":    description,
+        "salary_min":     sal_min or 0,
+        "salary_max":     sal_max or 0,
+        "growth":         growth or "Medium",
+        "gap_score":      gap_score,
+        "matched_skills": matched_skills,
+        "missing_skills": missing_skills,
+        "radar_data":     radar_data[:8],
+        "quiz_scores":    quiz_scores_display,
+        "total_required": len(required_skills)
+    }
 
 
 
