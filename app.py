@@ -245,6 +245,7 @@ def create_quiz():
 
     if request.method == 'POST':
         title = request.form.get('title')
+        tags_raw = request.form.get('tags', '')
 
         conn = get_db()
         cursor = conn.cursor()
@@ -255,8 +256,16 @@ def create_quiz():
         """, (title, session['Id']))
 
         quiz_id = cursor.lastrowid
-        conn.commit()
 
+        tags = [t.strip().lower() for t in tags_raw.split(',') if t.strip()]
+        for tag in tags:
+            cursor.execute(
+                "INSERT INTO quiz_tags (quiz_id, tag) VALUES (%s, %s)",
+                (quiz_id, tag)
+            )
+ 
+
+        conn.commit()
         cursor.close()
         conn.close()
 
@@ -306,10 +315,23 @@ def add_question(quiz_id):
 
 @app.route('/quiz_list')
 def quiz_list():
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+    
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM quizzes")
+    cursor.execute("""
+        SELECT 
+            q.id,
+            q.title,
+            q.created_at,
+            GROUP_CONCAT(qt.tag ORDER BY qt.tag SEPARATOR ', ') as tags
+        FROM quizzes q
+        LEFT JOIN quiz_tags qt ON q.id = qt.quiz_id
+        GROUP BY q.id, q.title, q.created_at
+        ORDER BY q.id DESC
+    """)
     quizzes = cursor.fetchall()
 
     cursor.close()
@@ -402,7 +424,34 @@ def submit_quiz(quiz_id):
     cursor.close()
     conn.close()
 
-    return f"Score: {score}/{total}"
+    compute_recommendations(user_id)
+ 
+    return redirect(f'/quiz_result/{quiz_id}/{score}/{total}')
+
+    # return f"Score: {score}/{total}"
+
+
+@app.route('/quiz_result/<int:quiz_id>/<int:score>/<int:total>')
+def quiz_result(quiz_id, score, total):
+    if 'Id' not in session:
+        return redirect('/')
+ 
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT title FROM quizzes WHERE id=%s", (quiz_id,))
+    quiz = cursor.fetchone()
+    cursor.close()
+    conn.close()
+ 
+    pct = round((score / total) * 100) if total > 0 else 0
+ 
+    return render_template('quiz_result.html',
+                           quiz_title=quiz[0] if quiz else "Quiz",
+                           score=score,
+                           total=total,
+                           pct=pct)
+ 
+ 
 
 @app.route('/view_results')
 def view_results():
@@ -977,6 +1026,311 @@ def delete_skill(skill_id):
     conn.close()
 
     return redirect('/skills')
+
+
+
+# # RECOMMENDATIon
+def compute_recommendations(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # 1. User skills
+    cursor.execute("SELECT LOWER(skill_name) FROM user_skills WHERE user_id=%s", (user_id,))
+    user_skills = set(row[0] for row in cursor.fetchall())
+
+    # 2. Quiz scores — separate query, separate fetchall, no cursor reuse
+    cursor.execute("""
+        SELECT quiz_id, MAX(CASE WHEN total > 0 THEN (score * 100.0 / total) ELSE 0 END)
+        FROM quiz_results
+        WHERE user_id=%s
+        GROUP BY quiz_id
+    """, (user_id,))
+    rows = cursor.fetchall()  # consume immediately into a variable
+    quiz_scores = {int(row[0]): float(row[1]) for row in rows}
+
+    # 3. Quiz titles
+    cursor.execute("SELECT id, LOWER(title) FROM quizzes")
+    quiz_titles = {row[0]: row[1] for row in cursor.fetchall()}
+
+    # 4. Quiz tags
+    cursor.execute("SELECT quiz_id, LOWER(tag) FROM quiz_tags")
+    quiz_tag_map = {}
+    for row in cursor.fetchall():
+        quiz_tag_map.setdefault(int(row[0]), set()).add(row[1])
+
+    # 5. User domains
+    cursor.execute("SELECT domain_id FROM user_domain_preferences WHERE user_id=%s", (user_id,))
+    user_domains = set(int(row[0]) for row in cursor.fetchall())
+
+    # 6. All careers
+    cursor.execute("""
+        SELECT id, domain_id, required_skills, required_quiz_tags, min_quiz_score_pct
+        FROM careers
+    """)
+    careers = cursor.fetchall()
+
+    results = []
+
+    for career in careers:
+        career_id, domain_id, req_skills_str, req_quiz_tags_str, min_quiz_pct = career
+
+        # --- SKILL SCORE (0-50) ---
+        req_skills = [s.strip().lower() for s in (req_skills_str or "").split(",") if s.strip()]
+
+        if req_skills and user_skills:
+            matched = sum(
+                1 for req in req_skills
+                if any(req in us or us in req for us in user_skills)
+            )
+            skill_score = round((matched / len(req_skills)) * 50)
+        elif not req_skills:
+            skill_score = 25
+        else:
+            skill_score = 0
+
+        # --- QUIZ SCORE (0-30) ---
+        req_tags = [t.strip().lower() for t in (req_quiz_tags_str or "").split(",") if t.strip()]
+        quiz_score_contrib = 10  # baseline for users who haven't taken quizzes yet
+
+        if req_tags and quiz_scores:
+            relevant_scores = []
+            for qid, score_pct in quiz_scores.items():
+                title = quiz_titles.get(qid, "")
+                tags = quiz_tag_map.get(qid, set())
+                is_relevant = any(tag in title or tag in tags for tag in req_tags)
+                if is_relevant:
+                    relevant_scores.append(score_pct if score_pct >= (min_quiz_pct or 0) else score_pct * 0.5)
+
+            if relevant_scores:
+                avg = sum(relevant_scores) / len(relevant_scores)
+                quiz_score_contrib = round((avg / 100) * 30)
+
+        # --- DOMAIN SCORE (0 or 20) ---
+        domain_score = 20 if (domain_id and int(domain_id) in user_domains) else 0
+
+        total = min(skill_score + quiz_score_contrib + domain_score, 100)
+
+        results.append({
+            "career_id": career_id,
+            "match_score": total,
+            "skill_match_score": skill_score,
+            "quiz_match_score": quiz_score_contrib,
+            "domain_match_score": domain_score
+        })
+
+    results.sort(key=lambda x: x["match_score"], reverse=True)
+    top = results[:10]
+
+    # DELETE then INSERT — use the SAME cursor/connection
+    cursor.execute("DELETE FROM recommendations WHERE user_id=%s", (user_id,))
+
+    for r in top:
+        cursor.execute("""
+            INSERT INTO recommendations
+                (user_id, career_id, match_score, skill_match_score, quiz_match_score, domain_match_score)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (user_id, r["career_id"], r["match_score"],
+              r["skill_match_score"], r["quiz_match_score"], r["domain_match_score"]))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return top
+
+
+@app.route('/select_domains', methods=['GET', 'POST'])
+def select_domains():
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        selected = request.form.getlist('domains')
+        cursor.execute("DELETE FROM user_domain_preferences WHERE user_id=%s", (user_id,))
+        for domain_id in selected:
+            cursor.execute(
+                "INSERT INTO user_domain_preferences (user_id, domain_id) VALUES (%s, %s)",
+                (user_id, int(domain_id))
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        compute_recommendations(user_id)
+        return redirect('/recommend')
+
+    cursor.execute("SELECT id, name, icon, description FROM domains ORDER BY name")
+    all_domains = cursor.fetchall()
+
+    cursor.execute("SELECT domain_id FROM user_domain_preferences WHERE user_id=%s", (user_id,))
+    selected_ids = set(row[0] for row in cursor.fetchall())
+
+    cursor.close()
+    conn.close()
+    return render_template('select_domains.html', domains=all_domains, selected_ids=selected_ids)
+
+
+@app.route('/recommend')
+def recommend():
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM user_skills WHERE user_id=%s", (user_id,))
+    skill_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM user_domain_preferences WHERE user_id=%s", (user_id,))
+    domain_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM recommendations WHERE user_id=%s", (user_id,))
+    rec_count = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    # Compute if nothing saved yet
+    if rec_count == 0:
+        compute_recommendations(user_id)
+
+    # Fresh connection to fetch results
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            c.id, c.title, c.description,
+            c.salary_min, c.salary_max, c.growth_potential, c.required_skills,
+            d.name,
+            r.match_score, r.skill_match_score, r.quiz_match_score, r.domain_match_score
+        FROM recommendations r
+        JOIN careers c ON r.career_id = c.id
+        LEFT JOIN domains d ON c.domain_id = d.id
+        WHERE r.user_id = %s
+        ORDER BY r.match_score DESC
+    """, (user_id,))
+    recs = cursor.fetchall()
+
+    cursor.execute("SELECT LOWER(skill_name) FROM user_skills WHERE user_id=%s", (user_id,))
+    user_skills = [row[0] for row in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+
+    recommendations = []
+    for row in recs:
+        skills_list = [s.strip() for s in (row[6] or "").split(",") if s.strip()][:6]
+        recommendations.append({
+            "id": row[0], "title": row[1], "description": row[2],
+            "salary_min": row[3] or 0, "salary_max": row[4] or 0,
+            "growth": row[5] or "Medium", "skills": skills_list,
+            "domain": row[7] or "General",
+            "match_score": row[8], "skill_score": row[9],
+            "quiz_score": row[10], "domain_score": row[11]
+        })
+
+    return render_template('recommend.html',
+                           recommendations=recommendations,
+                           skill_count=skill_count,
+                           domain_count=domain_count,
+                           user_skills=user_skills)
+
+
+@app.route('/regenerate_recommendations')
+def regenerate_recommendations():
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+
+    # Explicitly delete first on a dedicated connection
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM recommendations WHERE user_id=%s", (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    # Now recompute fresh
+    compute_recommendations(user_id)
+
+    return redirect('/recommend?refreshed=1')
+
+
+# ---- DEBUG: visit /debug_rec while logged in ----
+@app.route('/debug_rec')
+def debug_rec():
+    if 'Id' not in session:
+        return {"error": "not logged in"}
+
+    user_id = session['Id']
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT LOWER(skill_name) FROM user_skills WHERE user_id=%s", (user_id,))
+    skills = [r[0] for r in cursor.fetchall()]
+
+    cursor.execute("SELECT quiz_id, score, total FROM quiz_results WHERE user_id=%s", (user_id,))
+    quizzes = [{"quiz_id": r[0], "score": r[1], "total": r[2]} for r in cursor.fetchall()]
+
+    cursor.execute("SELECT domain_id FROM user_domain_preferences WHERE user_id=%s", (user_id,))
+    domains = [r[0] for r in cursor.fetchall()]
+
+    cursor.execute("SELECT COUNT(*) FROM careers")
+    career_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT career_id, match_score FROM recommendations WHERE user_id=%s ORDER BY match_score DESC", (user_id,))
+    recs = [{"career_id": r[0], "score": r[1]} for r in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "user_id": user_id,
+        "skills": skills,
+        "skill_count": len(skills),
+        "quiz_results": quizzes,
+        "selected_domain_ids": domains,
+        "careers_in_db": career_count,
+        "saved_recommendations": recs
+    }
+
+
+@app.route('/tag_quiz/<int:quiz_id>', methods=['GET', 'POST'])
+def tag_quiz(quiz_id):
+    if session.get('role') != 'admin':
+        return "Unauthorized", 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        tags_raw = request.form.get('tags', '')
+        tags = [t.strip().lower() for t in tags_raw.split(',') if t.strip()]
+        cursor.execute("DELETE FROM quiz_tags WHERE quiz_id=%s", (quiz_id,))
+        for tag in tags:
+            cursor.execute("INSERT INTO quiz_tags (quiz_id, tag) VALUES (%s, %s)", (quiz_id, tag))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect('/quiz_list')
+
+    cursor.execute("SELECT title FROM quizzes WHERE id=%s", (quiz_id,))
+    quiz = cursor.fetchone()
+    cursor.execute("SELECT tag FROM quiz_tags WHERE quiz_id=%s", (quiz_id,))
+    existing_tags = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+
+    return render_template('tag_quiz.html',
+                           quiz_id=quiz_id,
+                           quiz_title=quiz[0] if quiz else "",
+                           existing_tags=", ".join(existing_tags))
 
 
 
