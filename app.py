@@ -28,8 +28,6 @@ def get_db():
 
 
 
-
-
 @app.route('/')
 def home():
     if 'Id' in session:
@@ -835,6 +833,89 @@ def update_status(app_id, status):
 
     return redirect('/company_applications')
 
+
+
+# Jobs
+@app.route('/jobs')
+def jobs_list():
+    if 'Id' not in session:
+        return redirect('/')
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT j.id, j.title, j.location, j.salary, j.job_type, c.Cname
+        FROM jobs j
+        JOIN company c ON j.company_id = c.Id
+        ORDER BY j.created_at DESC
+    """)
+
+    jobs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("jobs.html", jobs=jobs)
+
+@app.route('/job/<int:job_id>')
+def job_detail(job_id):
+    if 'Id' not in session:
+        return redirect('/')
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT j.id, j.title, j.description, j.location, j.salary, j.job_type, c.Cname
+        FROM jobs j
+        JOIN company c ON j.company_id = c.Id
+        WHERE j.id=%s
+    """, (job_id,))
+
+    job = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("job_detail.html", job=job)
+
+
+@app.route('/apply/<int:job_id>', methods=['POST'])
+def apply_job(job_id):
+    if 'Id' not in session:
+        return redirect('/')
+
+    user_id = session['Id']
+    cover_letter = request.form.get('cover_letter')
+    resume = request.form.get('resume')  # simple text or file path
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # prevent duplicate apply
+    cursor.execute("""
+        SELECT id FROM applications 
+        WHERE user_id=%s AND job_id=%s
+    """, (user_id, job_id))
+
+    if cursor.fetchone():
+        return "Already applied"
+
+    # get company_id
+    cursor.execute("SELECT company_id FROM jobs WHERE id=%s", (job_id,))
+    company_id = cursor.fetchone()[0]
+
+    cursor.execute("""
+        INSERT INTO applications (user_id, job_id, company_id, cover_letter, resume, status)
+        VALUES (%s, %s, %s, %s, %s, 'Pending')
+    """, (user_id, job_id, company_id, cover_letter, resume))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect('/jobs')
 
 
 # Payment
