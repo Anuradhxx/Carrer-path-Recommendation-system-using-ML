@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Gap Analysis</title>
+
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    <style>
+
+body {
+    margin: 0;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    font-family: 'Satoshi', sans-serif;
+}
+
+
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.nav-container{
+  width:75%;
+  max-width:1000px;
+
+  background:rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+
+  padding:6px 16px;  
+  border-radius:50px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.08),
+    0 4px 6px rgba(0,0,0,0.04);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height: 1;
+  margin-left: 10px;
+}
+
+.logo-circle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+
+  background:linear-gradient(135deg,#1c6b42,#2b8a5e);
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: -1px;
+}
+
+.nav-menu{
+  display:flex;
+  align-items:center;
+  gap:24px;
+}
+
+.nav-menu li{
+  list-style:none;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:#2b2b2b;
+  font-size:14px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  transition:all 0.25s ease;
+}
+
+
+.nav-menu a:hover{
+  background:rgba(28,107,66,0.12);
+  color:#1c6b42;
+  transform: translateX(-1px);
+}
+
+
+.logo-text{
+  font-family: "Clash Display", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+
+  background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.nav-right a{
+  width:30px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  color:#333;
+
+  transition:all 0.25s ease;
+}
+
+
+.nav-right a:hover{
+  background:rgba(28,107,66,0.1);
+  color:#1c6b42;
+}
+
+
+.divider{
+  width:1px;
+  height:22px;
+  background:rgba(0,0,0,0.15);
+}
+
+
+.nav-menu svg{
+  width:18px;
+  height:18px;
+}
+
+.nav-right svg{
+  width:18px;
+  height:18px;
+}
+
+.logo svg{
+  width:16px;
+  height:16px;
+}
+
+
+/* PAGE */
+.page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+
+/* PAGE TITLE */
+.page-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+
+/* SELECTOR BAR */
+.selector-bar {
+    background: white;
+    border: 1px solid #e8e8e0;
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.selector-bar select {
+    flex: 1;
+    padding: 12px 16px;
+    background: #f5f5f0;
+    border: 1px solid #e8e8e0;
+    border-radius: 10px;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+}
+
+.selector-bar select:focus {
+    outline: none;
+    border-color: #2d6a4f;
+}
+
+.btn-analyze {
+    background: #2d6a4f;
+    color: white;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 26px;
+    border-radius: 22px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-analyze:hover {
+    background: #235a41;
+}
+
+.btn-analyze:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* LOADING */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 60px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e8e8e0;
+    border-top-color: #2d6a4f;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#results {
+    display: none;
+}
+
+.card {
+    background: white;
+    border: 1px solid #e8e8e0;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 22px;
+}
+
+.card-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 24px;
+}
+
+#radarCanvas {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.radar-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #454b57;
+}
+
+.legend-box {
+    width: 24px;
+    height: 10px;
+    border-radius: 3px;
+    background: rgba(45,106,79,0.2);
+    border: 1.5px solid #2d6a4f;
+}
+
+.rbar-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.rbar-track {
+    flex: 1;
+    height: 8px;
+    background: #f5f5f0;
+    border: 1px solid #e8e8e0;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.rbar-fill {
+    height: 100%;
+    background: #2d6a4f;
+    border-radius: 99px;
+    transition: width 1s ease;
+    width: 0%;
+}
+
+.rbar-pct {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    width: 40px;
+    text-align: right;
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+
+.tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 99px;
+    border: 1.5px solid;
+}
+
+.tag-green {
+    color: #2d6a4f;
+    background: #e8f5ee;
+    border-color: #a8d5bc;
+}
+
+.tag-amber {
+    color: #d97706;
+    background: #fef3c7;
+    border-color: #fcd34d;
+}
+
+.empty-note {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+
+.quiz-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid #e8e8e0;
+    font-size: 14px;
+}
+
+.quiz-row:last-child {
+    border-bottom: none;
+}
+
+.quiz-score {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 99px;
+}
+
+.qs-hi  { background: #e8f5ee; color: #2d6a4f; }
+.qs-mid { background: #fef3c7; color: #d97706; }
+.qs-lo  { background: #fee2e2; color: #dc2626; }
+
+
+.ai-card {
+    background: white;
+    border: 1px solid #e8e8e0;
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.ai-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #2d6a4f;
+    margin-bottom: 6px;
+}
+
+.ai-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+}
+
+#aiText {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #6b7280;
+}
+
+#aiText.ready {
+    color: #1a1a1a;
+}
+
+/* Loading dots */
+.dots {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2d6a4f;
+    animation: blink 1.2s ease infinite;
+}
+
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0%, 100% { opacity: 0.2; }
+    50%       { opacity: 1; }
+}
+    </style>
+</head>
+<body>
+
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-container">
+
+      <div class="logo">
+        <div class="logo-circle">
+          <i data-lucide="target"></i>
+        </div>
+        <span class="logo-text">CareerPath</span>
+      </div>
+
+      <ul class="nav-menu">
+        <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
+        <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
+        <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
+        <li> <a href="/recommend"><i data-lucide="goal"></i> Careers </a></li>
+        <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
+      </ul>
+
+      <div class="nav-right">
+        <div class="divider"></div>
+        <a href="#"><i data-lucide="moon"></i></a>
+        <a href="/profile"><i data-lucide="user-round"></i></a>
+        <a href="/logout"><i data-lucide="log-out"></i></a>
+      </div>
+
+    </div>
+  </nav>
+
+
+<!-- PAGE -->
+<div class="page">
+
+    <h1 class="page-title">Skill Gap Analysis</h1>
+    <p class="page-subtitle">Identify what skills you need to reach your target career</p>
+
+    <!-- CAREER SELECTOR -->
+    <div class="selector-bar">
+        <select id="careerSelect">
+            <option value="">Select a career...</option>
+            {% for c in careers %}
+            <option value="{{ c[0] }}">{{ c[1] }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+            Analyze Gap
+        </button>
+    </div>
+
+    <!-- LOADING SPINNER -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Analyzing your profile...
+    </div>
+
+    <!-- RESULTS - hidden until user clicks Analyze -->
+    <div id="results">
+
+        <!-- RADAR CHART -->
+        <div class="card">
+            <div class="card-title">Skill Level Breakdown</div>
+            <canvas id="radarCanvas" width="500" height="340"></canvas>
+            <div class="radar-legend">
+                <div class="legend-item">
+                    <div class="legend-box"></div>
+                    Your Skills
+                </div>
+            </div>
+        </div>
+
+        <!-- READINESS BAR -->
+        <div class="card">
+            <div class="card-title">Overall Readiness</div>
+            <div class="rbar-row">
+                <div class="rbar-track">
+                    <div class="rbar-fill" id="rbarFill"></div>
+                </div>
+                <span class="rbar-pct" id="rbarPct">0%</span>
+            </div>
+        </div>
+
+        <!-- YOUR SKILLS + SKILLS TO DEVELOP side by side -->
+        <div class="two-col">
+
+            <div class="card" style="margin-bottom: 0">
+                <div class="card-title">Your Current Skills</div>
+                <div class="tags-wrap" id="matchedTags">
+                    <span class="empty-note">No matching skills yet.</span>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 0">
+                <div class="card-title">Skills to Develop</div>
+                <div class="tags-wrap" id="missingTags">
+                    <span class="empty-note">You have all required skills!</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- QUIZ SCORES -->
+        <div class="card" style="margin-top: 18px">
+            <div class="card-title">Assessment Scores</div>
+            <div id="quizRows">
+                <p class="empty-note">
+                    No quizzes taken yet.
+                    <a href="/quizzes" style="color: #2d6a4f; font-weight: 600">Take one →</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- AI RECOMMENDATIONS -->
+        <div class="ai-card">
+            <div class="ai-label">Personalized Recommendations</div>
+            <div class="ai-title" id="aiTitle"></div>
+            <div id="aiText">
+                <span class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+async function runAnalysis() {
+    const careerId = document.getElementById('careerSelect').value;
+
+    if (!careerId) {
+        alert('Please select a career first.');
+        return;
+    }
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('analyzeBtn').disabled = true;
+
+    try {
+        const fd = new FormData();
+        fd.append('career_id', careerId);
+
+        const res = await fetch('/skill_gap_analysis', { method: 'POST', body: fd });
+        const data = await res.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        renderResults(data);
+        generateAI(data);
+
+    } catch (e) {
+        alert('Something went wrong. Please try again.');
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('analyzeBtn').disabled = false;
+    }
+}
+
+
+function renderResults(data) {
+    document.getElementById('results').style.display = 'block';
+
+    // Readiness bar
+    document.getElementById('rbarFill').style.width = data.gap_score + '%';
+    document.getElementById('rbarPct').textContent = data.gap_score + '%';
+
+    // Matched skills — green tags
+    const matchedEl = document.getElementById('matchedTags');
+    if (data.matched_skills.length > 0) {
+        matchedEl.innerHTML = data.matched_skills
+            .map(s => '<span class="tag tag-green">' + s.name + '</span>')
+            .join('');
+    } else {
+        matchedEl.innerHTML = '<span class="empty-note">No matching skills yet.</span>';
+    }
+
+    // Missing skills — amber tags
+    const missingEl = document.getElementById('missingTags');
+    if (data.missing_skills.length > 0) {
+        missingEl.innerHTML = data.missing_skills
+            .map(s => '<span class="tag tag-amber">' + s + '</span>')
+            .join('');
+    } else {
+        missingEl.innerHTML = '<span class="empty-note" style="color:#2d6a4f; font-weight:600">You have all required skills!</span>';
+    }
+
+    // Quiz scores
+    const quizEl = document.getElementById('quizRows');
+    const entries = Object.entries(data.quiz_scores);
+    if (entries.length > 0) {
+        quizEl.innerHTML = entries.map(function([title, pct]) {
+            const p = Math.round(pct);
+            const cls = p >= 70 ? 'qs-hi' : p >= 40 ? 'qs-mid' : 'qs-lo';
+            return '<div class="quiz-row"><span>' + title + '</span><span class="quiz-score ' + cls + '">' + p + '%</span></div>';
+        }).join('');
+    } else {
+        quizEl.innerHTML = '<p class="empty-note">No quizzes taken yet. <a href="/quizzes" style="color:#2d6a4f; font-weight:600">Take one →</a></p>';
+    }
+
+    // AI title
+    document.getElementById('aiTitle').textContent = data.career_title;
+
+    // Radar chart
+    if (data.radar_data && data.radar_data.length > 0) {
+        drawRadar(data.radar_data);
+    }
+
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+
+function drawRadar(pts) {
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    const cx = W / 2;
+    const cy = H / 2 + 10;
+    const R = Math.min(W, H) * 0.32;
+    const N = pts.length;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const angles = pts.map(function(_, i) {
+        return (Math.PI * 2 * i / N) - Math.PI / 2;
+    });
+
+    // Grid rings
+    [0.25, 0.5, 0.75, 1].forEach(function(scale) {
+        ctx.beginPath();
+        angles.forEach(function(a, i) {
+            const x = cx + R * scale * Math.cos(a);
+            const y = cy + R * scale * Math.sin(a);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.strokeStyle = '#e0e0d8';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // Spokes
+    angles.forEach(function(a) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+        ctx.strokeStyle = '#e0e0d8';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // User polygon (green fill)
+    ctx.beginPath();
+    angles.forEach(function(a, i) {
+        const v = pts[i].user_level / 100;
+        const x = cx + R * v * Math.cos(a);
+        const y = cy + R * v * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(45, 106, 79, 0.2)';
+    ctx.fill();
+    ctx.strokeStyle = '#2d6a4f';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Dots at each point
+    angles.forEach(function(a, i) {
+        const v = pts[i].user_level / 100;
+        const x = cx + R * v * Math.cos(a);
+        const y = cy + R * v * Math.sin(a);
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fill();
+    });
+
+    // Labels
+    ctx.font = '500 12px Satoshi, sans-serif';
+    ctx.fillStyle = '#6b7280';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    angles.forEach(function(a, i) {
+        const x = cx + (R + 30) * Math.cos(a);
+        const y = cy + (R + 30) * Math.sin(a);
+        ctx.fillText(pts[i].skill, x, y);
+    });
+}
+
+
+async function generateAI(data) {
+    const el = document.getElementById('aiText');
+    el.classList.remove('ready');
+    el.innerHTML = '<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+
+    const currentSkills = data.matched_skills.map(function(s) {
+        return s.name + ' (' + s.proficiency + ')';
+    }).join(', ') || 'none yet';
+
+    const missingSkills = data.missing_skills.join(', ') || 'none';
+
+    const quizInfo = Object.entries(data.quiz_scores).map(function([t, s]) {
+        return t + ': ' + Math.round(s) + '%';
+    }).join(', ') || 'none taken';
+
+    const prompt = 'You are a senior career coach. The user wants to become a ' + data.career_title + '. ' +
+        'Current skills: ' + currentSkills + '. ' +
+        'Missing skills: ' + missingSkills + '. ' +
+        'Quiz scores: ' + quizInfo + '. ' +
+        'Readiness: ' + data.gap_score + '%. ' +
+        'Write a 3-4 sentence personalized learning roadmap. Acknowledge what they have, prioritize the top 2-3 missing skills to learn first, and give one concrete action for this week. Be specific, motivating, and practical. No bullet points, flowing prose only.';
+
+    try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+
+        const result = await res.json();
+        const text = result.content && result.content[0] ? result.content[0].text : '';
+        el.textContent = text;
+        el.classList.add('ready');
+
+    } catch (e) {
+        el.textContent = 'Focus on your highest-priority missing skills first. Build them one at a time with real projects, then revisit this analysis to track your progress.';
+        el.classList.add('ready');
+    }
+}
+
+</script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>

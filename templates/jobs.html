@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jobs</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f6;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .job-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .job-card h3 {
+            margin: 0 0 10px;
+        }
+
+        .job-meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background: #1f5f3a;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #174c2f;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Available Jobs & Internships</h1>
+
+    {% if jobs %}
+        {% for job in jobs %}
+        <div class="job-card">
+            <h3>{{ job[1] }}</h3>
+
+            <div class="job-meta">
+                <strong>{{ job[5] }}</strong> | {{ job[2] }} | ₹{{ job[3] }}
+            </div>
+
+            <a href="/job/{{ job[0] }}" class="btn">View Details</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No jobs available right now.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

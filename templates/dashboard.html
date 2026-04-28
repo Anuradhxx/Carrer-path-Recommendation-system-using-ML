@@ -32,7 +32,7 @@
         <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
         <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
         <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
-        <li> <a href="#"><i data-lucide="goal"></i> Careers </a></li>
+        <li> <a href="/recommend"><i data-lucide="goal"></i> Careers </a></li>
         <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
       </ul>
 
@@ -70,7 +70,7 @@
           </div>
           <div>
             <h2>{{ quiz_count }}</h2>
-            <p>Assessments</p>
+            <p>Assessments Attempted</p>
           </div>
         </div>
 
@@ -79,8 +79,8 @@
             <i data-lucide="thumbs-up"></i>
           </div>
           <div>
-            <h2>0</h2>
-            <p>Recommendations</p>
+            <h2>{{ top_career[1] if top_career else 0 }}%</h2>
+            <p>{{ top_career[0] if top_career else "No match yet" }}</p>
           </div>
         </div>
 
@@ -89,7 +89,7 @@
             <i data-lucide="book-marked"></i>
           </div>
           <div>
-            <h2>0</h2>
+            <h2>{{ skill_count }}</h2>
             <p>Skills Tracked</p>
           </div>
         </div>
@@ -127,7 +127,7 @@
           Explore AI-powered career recommendations tailored to your unique profile and aspirations.
         </p>
 
-        <a href="#" class="btn outline">
+        <a href="/recommend" class="btn outline">
           View Careers →
         </a>
       </div>
@@ -143,7 +143,7 @@
           Understand what skills you need to develop to reach your dream career.
         </p>
 
-        <a href="#" class="btn outline">
+        <a href="/skill_gap" class="btn outline">
           Analyze Skills →
         </a>
       </div>
@@ -164,6 +164,22 @@
         </a>
       </div>
 
+
+      <div class="action-card">
+        <div class="icon green big">
+          <i data-lucide="building-2"></i>
+        </div>
+
+        <h3>Explore Jobs & Internships</h3>
+        <p>
+          Browse Jobs & Internship openings from companies, filter by your skills, and apply directly in seconds..
+        </p>
+
+        <a href="/jobs" class="btn outline">
+          View Openings →
+        </a>
+      </div>
+
     </section>
 
   </div>
@@ -173,9 +189,6 @@
   <script>
     lucide.createIcons();
   </script>
-
-
-  <script src="../static/js/dashboard.js"></script>
 
 </body>
 

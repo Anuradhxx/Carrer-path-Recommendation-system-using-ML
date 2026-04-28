@@ -1,282 +1,158 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-<title>Quizzes</title>
-
-<style>
-body{
-    font-family:Inter;
-    background:#0f172a;
-    color:white;
-    margin:0;
-}
-
-.container{
-    padding:30px;
-}
-
-.card{
-    background:#111827;
-    padding:20px;
-    margin:15px 0;
-    border-radius:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-a{
-    color:white;
-    text-decoration:none;
-    background:#3b82f6;
-    padding:8px 12px;
-    border-radius:6px;
-}
-
-.back {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    color: var(--dark);
-    text-decoration: none;
-}
-
-.back:hover {
-    color: var(--muted);
-}
-</style>
-
-</head>
-
-<body>
-    
-
-<div class="container">
-    <h1>All Quizzes</h1>
-
-
-    {% for q in quizzes %}
-    <div class="card">
-        <div>
-            <h3>{{ q[1] }}</h3>
-        </div>
-
-        <div>
-            <a href="/add_question/{{ q[0] }}">Add Questions</a>
-        </div>
-    </div>
-    {% endfor %}
-
-</div>
-
-<a href="/admin_dashboard" class="back">← Back to Dashboard</a>
-
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Quiz Management</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-:root{
-    --bg:#0b1220;
-    --panel:#111827;
-    --border:#1f2937;
-    --text:#e5e7eb;
-    --muted:#94a3b8;
-    --primary:#3b82f6;
-    --primary-hover:#2563eb;
+:root {
+    --bg: #0b1220;
+    --panel: #111827;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --primary: #3b82f6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif; }
+body { background: var(--bg); color: var(--text); }
+
+.header {
+    padding: 32px 40px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header h1 { font-size: 22px; font-weight: 700; }
+.header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.btn-create {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Inter;
+.container { padding: 0 40px 40px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
 }
 
-body{
-    background:var(--bg);
-    color:var(--text);
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: 0.2s;
+}
+.card:hover { transform: translateY(-2px); border-color: #2b3b55; }
+
+.card-title { font-size: 16px; font-weight: 600; }
+.card-id { font-size: 12px; color: var(--muted); }
+
+/* TAGS */
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
 }
 
-/* HEADER */
-.header{
-    padding:30px 40px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.tag {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.25);
+    color: #93c5fd;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
 }
 
-.header h1{
-    font-size:22px;
-    font-weight:600;
-}
-
-.header p{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:4px;
-}
-
-/* CONTAINER */
-.container{
-    padding:0 40px 40px;
-}
-
-/* GRID */
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-    gap:18px;
-}
-
-/* CARD */
-.card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:18px;
-    height:160px;          
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    transition:0.2s;
-}
-
-.card:hover{
-    transform:translateY(-3px);
-    border-color:#2b3b55;
-}
-
-/* TITLE */
-.title{
-    font-size:16px;
-    font-weight:600;
-    margin-bottom:6px;
-}
-
-/* META */
-.meta{
-    font-size:12px;
-    color:var(--muted);
-    margin-bottom:14px;
+.no-tags {
+    font-size: 11px;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 /* ACTIONS */
-.actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 
-.btn{
-    font-size:12px;
-    padding:8px 10px;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:500;
-    transition:0.2s;
-    display:inline-block;
+.btn {
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
 }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: #2563eb; }
+.btn-secondary { background: #1f2937; color: var(--text); }
+.btn-secondary:hover { background: #263244; }
+.btn-tag { background: rgba(34,211,238,0.1); color: #22d3ee; border: 1px solid rgba(34,211,238,0.25); }
+.btn-tag:hover { background: rgba(34,211,238,0.2); }
 
-.btn-primary{
-    background:var(--primary);
-    color:white;
-}
-
-.btn-primary:hover{
-    background:var(--primary-hover);
-}
-
-.btn-secondary{
-    background:#1f2937;
-    color:var(--text);
-}
-
-.btn-secondary:hover{
-    background:#263244;
-}
-
-/* EMPTY STATE */
-.empty{
-    text-align:center;
-    margin-top:60px;
-    color:var(--muted);
-}
-
-/* BACK */
-.back{
-    display:block;
-    text-align:center;
-    margin:30px 0;
-    color:var(--muted);
-    text-decoration:none;
-    font-size:13px;
-}
-
-.back:hover{
-    color:white;
-}
+.empty { text-align: center; margin-top: 60px; color: var(--muted); }
+.back { display: block; text-align: center; margin: 30px 0; color: var(--muted); text-decoration: none; font-size: 13px; }
+.back:hover { color: white; }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div>
         <h1>Quiz Management</h1>
-        <p>Create, manage and organize all quizzes</p>
+        <p>Create, tag, and manage all quizzes</p>
     </div>
+    <a href="/create_quiz" class="btn-create">+ Create Quiz</a>
 </div>
 
-<!-- CONTENT -->
 <div class="container">
 
     {% if quizzes %}
-
     <div class="grid">
-
         {% for q in quizzes %}
         <div class="card">
 
-            <div class="title">{{ q[1] }}</div>
+            <div>
+                <div class="card-title">{{ q[1] }}</div>
+                <div class="card-id">ID: {{ q[0] }} &nbsp;·&nbsp; Created: {{ q[2].strftime('%d %b %Y') if q[2] else '—' }}</div>
+            </div>
 
-            <div class="meta">
-                Quiz ID: {{ q[0] }}
+            <!-- TAGS -->
+            <div class="tag-row">
+                {% if q[3] %}
+                    {% for tag in q[3].split(', ') %}
+                    <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="no-tags">⚠ No tags — won't affect recommendations</span>
+                {% endif %}
             </div>
 
             <div class="actions">
-                <a class="btn btn-primary" href="/add_question/{{ q[0] }}">
-                    + Add Questions
-                </a>
-
-                <a class="btn btn-secondary" href="/take_quiz/{{ q[0] }}">
-                    Preview
-                </a>
+                <a class="btn btn-primary" href="/add_question/{{ q[0] }}">+ Questions</a>
+                <a class="btn btn-tag" href="/tag_quiz/{{ q[0] }}">🏷 Edit Tags</a>
+                <a class="btn btn-secondary" href="/take_quiz/{{ q[0] }}">Preview</a>
             </div>
 
         </div>
         {% endfor %}
-
     </div>
 
     {% else %}
-
-    <div class="empty">
-        No quizzes found. Create your first quiz.
-    </div>
-
+    <div class="empty">No quizzes yet. <a href="/create_quiz" style="color:#3b82f6">Create one →</a></div>
     {% endif %}
 
 </div>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Details</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f6;
+            margin: 0;
+        }
+
+        .container {
+            width: 70%;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .meta {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 16px;
+            background: #1f5f3a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #174c2f;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    {% if job %}
+    <div class="card">
+        <h2>{{ job[1] }}</h2>
+
+        <div class="meta">
+            <strong>{{ job[6] }}</strong> | {{ job[4] }} | ₹{{ job[3] }}
+        </div>
+
+        <p>{{ job[2] }}</p>
+
+        <hr>
+
+        <h3>Apply for this job</h3>
+
+        <form method="POST" action="/apply/{{ job[0] }}">
+            <label>Cover Letter</label>
+            <textarea name="cover_letter" rows="5" required></textarea>
+
+            <label>Resume Link (Google Drive / PDF URL)</label>
+            <input type="text" name="resume" required>
+
+            <button type="submit">Apply Now</button>
+        </form>
+    </div>
+    {% else %}
+        <p>Job not found.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

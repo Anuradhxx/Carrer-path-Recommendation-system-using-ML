@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Internship Payment</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --dark: #574964;
+    --muted: #9F8383;
+    --light: #C8AAAA;
+    --accent: #FFDAB3;
+
+    --bg: #f6f3f7;
+    --card: #ffffff;
+    --text: #2b2230;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+/* PAGE */
+body {
+    background: linear-gradient(135deg, #f6f3f7, #efe7f0);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 40px;
+
+    background: var(--card);
+    border-bottom: 1px solid rgba(87, 73, 100, 0.1);
+
+    position: sticky;
+    top: 0;
+}
+
+.navbar h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.navbar a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+
+    padding: 8px 14px;
+    border-radius: 10px;
+
+    background: var(--dark);
+    color: white;
+
+    transition: 0.2s ease;
+}
+
+.navbar a:hover {
+    background: #6b5a79;
+}
+
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+
+    padding: 0 20px;
+}
+
+
+.card {
+    background: var(--card);
+    border-radius: 20px;
+
+    padding: 25px;
+
+    border: 1px solid rgba(87, 73, 100, 0.08);
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+}
+
+
+h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+
+.plan {
+    border: 1px solid #eee;
+    border-radius: 14px;
+
+    padding: 18px;
+    margin-bottom: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.plan:hover {
+    border-color: var(--dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.plan h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.plan p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.price {
+    margin-top: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+
+form {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 12px;
+}
+
+input,
+select {
+    width: 100%;
+    margin-top: 6px;
+
+    padding: 12px 14px;
+
+    border-radius: 12px;
+    border: 1px solid #e6dfe8;
+
+    background: #fafafa;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 3px rgba(87, 73, 100, 0.12);
+}
+
+
+.btn {
+    margin-top: 18px;
+
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    background: var(--dark);
+    color: white;
+
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    background: #6b5a79;
+    transform: translateY(-1px);
+}
+
+
+.summary {
+    border-left: 4px solid var(--dark);
+}
+
+.summary p {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 10px 0;
+}
+
+.highlight {
+    color: var(--dark);
+    font-weight: 700;
+}
+
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar {
+        padding: 14px 18px;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h3>Internship Enrollment</h3>
+        <a href="/company_dashboard" style="color:white;">Back</a>
+    </div>
+
+    <div class="container">
+
+        <!-- LEFT -->
+        <div class="card">
+
+            <h2>Choose Internship Plan</h2>
+            <p class="subtitle">Select a program and complete your enrollment</p>
+
+            <div class="plan">
+                <h3>Basic Internship</h3>
+                <p>Beginner level program</p>
+                <p class="price">₹499</p>
+            </div>
+
+            <div class="plan">
+                <h3>Professional Internship</h3>
+                <p>Industry level experience + certificate</p>
+                <p class="price">₹999</p>
+            </div>
+
+            <div class="plan">
+                <h3>Advanced Internship</h3>
+                <p>Live projects + mentorship</p>
+                <p class="price">₹1499</p>
+            </div>
+
+            <hr style="margin:20px 0;">
+
+            <form action="/make_payment" method="POST">
+
+                <label>Select Plan</label>
+                <select name="plan">
+                    <option>Basic - ₹499</option>
+                    <option>Professional - ₹999</option>
+                    <option>Advanced - ₹1499</option>
+                </select>
+
+                <label>Payment Method</label>
+                <select name="method">
+                    <option>UPI</option>
+                    <option>Card</option>
+                    <option>Net Banking</option>
+                </select>
+
+                <label>Transaction ID</label>
+                <input type="text" name="transaction_id" placeholder="Enter transaction ID">
+
+                <button class="btn" type="submit">Pay & Enroll</button>
+
+            </form>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="card summary">
+
+            <h2>Order Summary</h2>
+
+            <p>✔ Internship Access</p>
+            <p>✔ Certificate Included</p>
+            <p>✔ Company Dashboard Access</p>
+            <p>✔ Project Work</p>
+
+            <hr style="margin:15px 0;">
+
+            <p><span class="highlight">Secure Payment System</span></p>
+            <p>All transactions are logged and verified manually (demo system)</p>
+
+        </div>
+
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <button onclick="payNow()">Pay Now</button>
+
+    <script>
+        function payNow() {
+            fetch("/create_order", { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    var options = {
+                        "key": "YOUR_KEY_ID",
+                        "amount": data.amount,
+                        "currency": "INR",
+                        "order_id": data.order_id,
+
+                        "handler": function (response) {
+                            fetch("/verify_payment", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(response)
+                            })
+                        }
+                    };
+
+                    var rzp = new Razorpay(options);
+                    rzp.open();
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>

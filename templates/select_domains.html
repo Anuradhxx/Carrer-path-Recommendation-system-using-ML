@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Domains — CareerPath</title>
+
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+    body {
+    margin: 0;
+    font-family: "Satoshi", sans-serif;
+    background: linear-gradient(135deg,#edf5f1,#f8faf9);
+    color: #1a1a1a;
+    padding-bottom: 60px;
+}
+
+.navbar{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.nav-container{
+  width:75%;
+  max-width:1000px;
+  background:rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  padding:6px 16px;  
+  border-radius:50px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.08),
+    0 4px 6px rgba(0,0,0,0.04);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height: 1;
+  margin-left: 10px;
+}
+
+.logo-circle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#1c6b42,#2b8a5e);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: -1px;
+}
+
+.nav-menu{
+  display:flex;
+  align-items:center;
+  gap:24px;
+}
+
+.nav-menu li{
+  list-style:none;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:#2b2b2b;
+  font-size:14px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  transition:all 0.25s ease;
+}
+
+.nav-menu a:hover{
+  background:rgba(28,107,66,0.12);
+  color:#1c6b42;
+  transform: translateX(-1px);
+}
+
+.logo-text{
+  font-family: "Clash Display", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.nav-right a{
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:#333;
+  transition:all 0.25s ease;
+}
+
+.nav-right a:hover{
+  background:rgba(28,107,66,0.1);
+  color:#1c6b42;
+}
+
+.divider{
+  width:1px;
+  height:22px;
+  background:rgba(0,0,0,0.15);
+}
+.nav-menu svg{
+  width:18px;
+  height:18px;
+}
+
+.nav-right svg{
+  width:18px;
+  height:18px;
+}
+
+.logo svg{
+  width:16px;
+  height:16px;
+}
+
+/* PAGE */
+.page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* HEADER */
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.step-badge {
+    display: inline-block;
+    background: rgba(28,107,66,0.1);
+    color: #1c6b42;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.page-header h1 {
+    font-family: "Clash Display", sans-serif;
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.page-header h1 span {
+    background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-header p {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+/* STEPS */
+.steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0 50px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step.done .step-num {
+    background: #1c6b42;
+    color: white;
+}
+
+.step.active .step-num {
+    background: #2b8a5e;
+    color: white;
+}
+
+.step.pending .step-num {
+    background: #bc6b25c4;
+}
+
+.step-line {
+    width: 60px;
+    height: 2px;
+    background: #5d5e61;
+    margin: 0 12px;
+}
+
+/* NOTICE */
+.notice {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background: #f3ba7ab6;
+    border: 1px solid #ac9804;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* GRID */
+.domain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+/* CARD */
+.domain-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.domain-card:hover {
+    border-color: #2b8a5e;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.domain-card.selected {
+    border: 2px solid #2b8a5e;
+    background: #f0fdf4;
+} 
+
+/* ICON */
+.domain-icon {
+    width: 42px;
+    height: 42px;
+    background: #ecfdf5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.domain-icon svg {
+    stroke: #1c6b42;
+}
+
+/* TEXT */
+.domain-name {
+    font-family: "Clash Display";
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.domain-desc {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* CHECK */
+.selected-tick {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    background: #2b8a5e;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.domain-card.selected .selected-tick {
+    display: flex;
+}
+
+/* COUNT */
+.selection-info {
+    text-align: center;
+    margin: 30px 0;
+    font-size: 16px;
+}
+
+.selection-info strong {
+    color: #1c6b42;
+}
+
+/* BUTTON */
+.submit-area {
+    text-align: center;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+    color: white;
+    padding: 14px 36px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(28,107,66,0.2);
+}
+
+.btn-skip {
+    display: block;
+    margin-top: 14px;
+    font-weight: bold;
+    color: #e85d04;
+    text-decoration: none;
+}
+
+.btn-skip:hover {
+    color: #1c6b42;
+}
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+        <div class="nav-container">
+
+            <div class="logo">
+                <div class="logo-circle">
+                    <i data-lucide="target"></i>
+                </div>
+                <span class="logo-text">CareerPath</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
+                <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
+                <li> <a href="/recommend"><i data-lucide="goal"></i> Careers </a></li>
+                <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="divider"></div>
+                <a href="#"><i data-lucide="moon"></i></a>
+                <a href="/profile"><i data-lucide="user-round"></i></a>
+                <a href="/logout"><i data-lucide="log-out"></i></a>
+            </div>
+
+        </div>
+    </nav>
+
+<div class="page">
+
+    <div class="page-header">
+        <div class="step-badge">
+            ✦ Step 3 of 3
+        </div>
+        <h1>Choose your <span>domain interests</span></h1>
+        <p>Select the areas you're passionate about. We'll use this to personalize your career recommendations.</p>
+    </div>
+
+    <!-- Steps indicator -->
+    <div class="steps">
+        <div class="step done">
+            <div class="step-num">✓</div>
+            <div class="step-label">Add Skills</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step done">
+            <div class="step-num">✓</div>
+            <div class="step-label">Take Quiz</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step pending">
+            <div class="step-num">3</div>
+            <div class="step-label">Pick Domains</div>
+        </div>
+    </div>
+
+    <div class="notice">
+        <span><i data-lucide="lightbulb"></i></span>
+        <span>Select 1–3 domains for focused recommendations, or pick more to explore all possibilities. You can always come back and change these.</span>
+    </div>
+
+    <form method="POST" action="/select_domains" id="domainForm">
+
+        <div class="domain-grid">
+            {% for d in domains %}
+            <div class="domain-card {% if d[0] in selected_ids %}selected{% endif %}"
+                 onclick="toggleDomain(this, '{{ d[0] }}')">
+
+                <div class="checkbox-empty"></div>
+                <div class="selected-tick">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+
+                <input type="checkbox" 
+                       name="domains" 
+                       value="{{ d[0] }}" 
+                       id="d{{ d[0] }}"
+                       style="display:none"
+                       {% if d[0] in selected_ids %}checked{% endif %}>
+
+                <div class="domain-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                        <!-- Generic icon — you can swap these per domain -->
+                        <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                        <path d="M8 12h8M12 8v8"></path>
+                    </svg>
+                </div>
+
+                <div class="domain-name">{{ d[1] }}</div>
+                <div class="domain-desc">{{ d[3] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <p class="selection-info">
+            <strong id="selCount">{{ selected_ids|length }}</strong> domain(s) selected
+        </p>
+
+        <div class="submit-area">
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+                Generate My Recommendations
+            </button>
+            <a href="/recommend" class="btn-skip">Skip for now →</a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function toggleDomain(card, id) {
+    card.classList.toggle('selected');
+    const cb = document.getElementById('d' + id);
+    cb.checked = !cb.checked;
+    
+    const count = document.querySelectorAll('.domain-card.selected').length;
+    document.getElementById('selCount').textContent = count;
+}
+</script>
+ <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

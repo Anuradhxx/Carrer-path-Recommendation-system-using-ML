@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Skills</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skills.css') }}">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <div class="logo">
+                <div class="logo-circle">
+                    <i data-lucide="target"></i>
+                </div>
+                <span class="logo-text">CareerPath</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li> <a href="/dashboard"><i data-lucide="house"></i> Dashboard </a></li>
+                <li> <a href="/quizzes"><i data-lucide="book-open-check"></i> Assessment </a></li>
+                <li> <a href="/skills"><i data-lucide="trending-up"></i> Skills </a></li>
+                <li> <a href="/recommend"><i data-lucide="goal"></i> Careers </a></li>
+                <li> <a href="/market"><i data-lucide="briefcase-business"></i> Market </a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="divider"></div>
+                <a href="#"><i data-lucide="moon"></i></a>
+                <a href="/profile"><i data-lucide="user-round"></i></a>
+                <a href="/logout"><i data-lucide="log-out"></i></a>
+            </div>
+
+        </div>
+    </nav>
+
+
+
+
+    <div class="container">
+
+
+        <!-- HERO BANNER -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <i data-lucide="zap"></i>
+                    <span>Skill Profile</span>
+                </div>
+                <h1>Build your skill profile.</h1>
+                <p>Showcase what you know. Employers and collaborators see your skills front and center.</p>
+                <div class="hero-actions">
+                    <button class="btn-primary" onclick="document.getElementById('skillName').focus()">
+                        <i data-lucide="plus"></i> Add Skill
+                    </button>
+                    <button class="btn-secondary">
+                        <i data-lucide="upload"></i> Upload Resume
+                    </button>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="total-pill">
+                    <span id="totalCount">0</span>
+                    <p>Total Skills</p>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="header">
+            <h1>Your Skills</h1>
+        </div>
+
+        <div class="add-box">
+            <input type="text" id="skillName" placeholder="Enter skill...">
+
+            <select id="skillType">
+                <option value="technical">Technical</option>
+                <option value="soft">Soft</option>
+            </select>
+
+            <select id="proficiency">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate" selected>Intermediate</option>
+                <option value="advanced">Advanced</option>
+                <option value="expert">Expert</option>
+            </select>
+
+            <button onclick="addSkill()">Add Skill</button>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h3> <i data-lucide="cpu"></i> Technical Skills</h3>
+                <div id="techList"></div>
+            </div>
+
+            <div class="card">
+                <h3> <i data-lucide="users"></i> Soft Skills</h3>
+                <div id="softList"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script id="skills-data" type="application/json">
+    {{ skills | tojson }}
+</script>
+
+    <script src="{{ url_for('static', filename='js/skills.js') }}"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
