@@ -6,7 +6,8 @@
 }
 body{
     min-height: 100vh;
-    background:linear-gradient(135deg,#026735a9 0%,#aef5d5 40%,#013f22 100%);
+    /* background:linear-gradient(135deg,#026735a9 0%,#aef5d5 40%,#013f22 100%); */
+    background: url(../images/brandi-redd-aJTiW00qqtI-unsplash.jpg)
 
 }
 .container{
@@ -119,14 +120,14 @@ select:valid ~ label{
     outline: none;
     border: none;
     width: 100%;
-    background: linear-gradient(135deg, #6c63ff, #5e72e4);
+    background: linear-gradient(135deg, #408A71, #285A48);
     box-shadow: 0 4px 12px rgba(92,114,228,0.4);
     color: white;
     cursor: pointer;
     transition: 0.9s;
 }
 .btn:hover{
-    background: (135deg, #5e72e4, #6c63ff);
+    background: (135deg, #285A48, #408A71);
     transform: scale(1.06);
 }
 

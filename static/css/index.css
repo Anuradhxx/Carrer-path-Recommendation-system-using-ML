@@ -14,11 +14,15 @@ color: #222;
 }
 
 .navbar {
-  position: fixed;
-  top: 20px;
-  width: 100%;
+  position: sticky;
+  top: 0px;
+  /* width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: center; */
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   z-index: 1000;
 }
 
@@ -26,28 +30,55 @@ color: #222;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 55%;
-  padding: 8px 18px;
-  background: rgba(255, 255, 255, 0.6);
+  width: 75%;
+  padding: 12px 20px;
+  max-width: 1100px;
+  margin: auto;
+  /* background: rgba(255, 255, 255, 0.6); */
   /* backdrop-filter: blur(14px); */
-  border-radius: 30px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  /* border-radius: 30px; */
+  /* box-shadow: 0 6px 18px rgba(0,0,0,0.06); */
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  font-size: 12px;
+.logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height: 1;
+  margin-left: 10px;
 }
 
-.logo img {
-  height: 44px;     
-  width: auto;
-  display: block;
-  object-fit: cover;
-  border-radius: 50%;   
+.logo-circle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+
+  background:linear-gradient(135deg,#1c6b42,#2b8a5e);
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: -1px;
+  color: white;
+}
+
+.logo-text{
+  font-family: "Clash Display", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+
+  background: linear-gradient(135deg,#1c6b42,#2b8a5e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #1f2937;
+}
+
+.logo svg{
+  width:16px;
+  height:16px;
 }
 
 .nav-links {
@@ -68,7 +99,6 @@ color: #222;
   font-weight: 600;
 }
 
-
 .signup {
   text-decoration: none;
   padding: 6px 14px;
@@ -85,7 +115,7 @@ color: #222;
 }
 
 header{
-padding-top: 120px;
+padding-top: 40px;
 }
 
 .hero-title{

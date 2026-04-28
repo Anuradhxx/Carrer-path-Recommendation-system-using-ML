@@ -376,6 +376,29 @@ body{
   font-weight: 500;
 }
 
+.input-row select {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #e2e2e2;
+  background: rgba(255,255,255,0.9);
+  font-size: 14px;
+  font-family: "Satoshi", sans-serif;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-shadow: none;
+
+  transition: all 0.2s ease;
+}
+
+.input-row select:focus {
+  border-color: #1c6b42;
+  box-shadow: 0 0 0 3px rgba(28,107,66,0.15);
+}
+
+
+
 /* ===== BUTTON ===== */
 .btn {
   display: inline-flex;

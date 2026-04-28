@@ -1,0 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --dark: #574964;
+    --muted: #9F8383;
+    --light: #C8AAAA;
+    --accent: #FFDAB3;
+
+    --bg: #f6f3f7;
+    --card: #ffffff;
+    --text: #2b2230;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+
+body {
+    background: linear-gradient(135deg, #f6f3f7, #efe7f0);
+    min-height: 100vh;
+    color: var(--text);
+}
+
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 40px;
+
+    background: var(--card);
+    border-bottom: 1px solid rgba(87, 73, 100, 0.1);
+
+    position: sticky;
+    top: 0;
+}
+
+.navbar h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.navbar a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+
+    padding: 8px 14px;
+    border-radius: 10px;
+
+    background: var(--dark);
+    color: white;
+
+    transition: 0.2s ease;
+}
+
+.navbar a:hover {
+    background: #6b5a79;
+}
+
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 35px 24px;
+}
+
+
+.card-header {
+    background: var(--card);
+    padding: 22px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(87, 73, 100, 0.08);
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+}
+
+.card-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+.card-header p {
+    margin-top: 5px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+
+.filters {
+    margin-top: 20px;
+
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filters a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+
+    padding: 8px 14px;
+    border-radius: 10px;
+
+    background: var(--card);
+    border: 1px solid rgba(87, 73, 100, 0.12);
+
+    color: var(--dark);
+
+    transition: 0.2s ease;
+}
+
+.filters a:hover {
+    background: var(--dark);
+    color: white;
+}
+
+
+.table {
+    width: 100%;
+    margin-top: 25px;
+
+    border-collapse: collapse;
+    background: var(--card);
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+}
+
+.table th {
+    background: var(--dark);
+    color: white;
+
+    padding: 14px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.table td {
+    padding: 14px;
+    font-size: 13px;
+
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+
+
+.table tr:hover td {
+    background: #faf6f9;
+}
+
+
+details {
+    cursor: pointer;
+    font-size: 13px;
+}
+
+details summary {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+details p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.status.Applied {
+    background: #efe7f0;
+    color: var(--dark);
+}
+
+.status.Shortlisted {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.status.Interview {
+    background: #e7f0ff;
+    color: #1e5aa8;
+}
+
+.status.Rejected {
+    background: #fde8e8;
+    color: #b23b3b;
+}
+
+
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.actions a {
+    text-decoration: none;
+    font-size: 12px;
+
+    padding: 6px 10px;
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+.shortlist {
+    background: #e6f4ea;
+    color: #2e7d32;
+}
+
+.shortlist:hover {
+    background: #2e7d32;
+    color: white;
+}
+
+.interview {
+    background: #e7f0ff;
+    color: #1e5aa8;
+}
+
+.interview:hover {
+    background: #1e5aa8;
+    color: white;
+}
+
+
+.reject {
+    background: #fde8e8;
+    color: #b23b3b;
+}
+
+.reject:hover {
+    background: #b23b3b;
+    color: white;
+}
+
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 14px 18px;
+    }
+
+    .container {
+        padding: 20px 14px;
+    }
+
+    .card-header h1 {
+        font-size: 20px;
+    }
+
+    .table td, .table th {
+        font-size: 12px;
+    }
+}
